@@ -60,7 +60,7 @@ export default function Register() {
   }
 
   return (
-    <div className="login-page">
+    <div className="login-page register-page">
       <header className="nav">
         <nav className="nav-links">
           <Link to="/">Home</Link>

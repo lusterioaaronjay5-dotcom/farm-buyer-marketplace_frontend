@@ -1,9 +1,13 @@
+/* Register.css */
+
+/* Dalawang column para sa phone/address at password/confirm */
 .register-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
+/* Select at textarea (kung gagamitin sa ibang page) */
 .form-group select,
 .form-group textarea {
   width: 100%;
@@ -27,32 +31,48 @@
   min-height: 70px;
 }
 
-.role-options {
+/* Role selector */
+.form-group .role-options {
   display: flex;
   gap: 12px;
 }
 
-.role-option {
+.form-group .role-option {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
+  margin: 0;
+  padding: 14px 12px;
+  box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 6px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.08);
-  cursor: pointer;
+  color: #fff;
+  font-size: 1rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
 }
 
-.role-option.selected {
+.form-group .role-option:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.form-group .role-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 auto;
+  accent-color: #a7c957;
+  cursor: pointer;
+}
+
+.form-group .role-option.selected {
   border-color: #a7c957;
   background: rgba(46, 125, 79, 0.45);
-}
-
-.role-option input {
-  accent-color: #a7c957;
 }
 
 @media (max-width: 700px) {
