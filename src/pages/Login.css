@@ -1,0 +1,121 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, sans-serif;
+  color: #fff;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
+    url('/hero-farm.jpg') center 35% / cover no-repeat,
+    linear-gradient(135deg, #4f7d2c, #a7c957);
+}
+
+.login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 36px 32px;
+}
+
+.login-card h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.login-sub {
+  margin: 0 0 24px;
+  text-align: center;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-group input:focus {
+  border-color: #a7c957;
+}
+
+.login-error {
+  background: rgba(200, 40, 40, 0.25);
+  border: 1px solid rgba(255, 120, 110, 0.6);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+}
+
+.login-submit {
+  width: 100%;
+  background: #2e7d4f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-foot {
+  margin: 22px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.login-foot a {
+  color: #a7c957;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .login-card {
+    padding: 28px 22px;
+  }
+}

@@ -1,0 +1,225 @@
+.market-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, sans-serif;
+  color: #fff;
+  background: #1a1d1a;
+}
+
+/* Nav at banner na may parehong farm photo ng homepage */
+.market-banner {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
+    url('/hero-farm.jpg') center 35% / cover no-repeat,
+    linear-gradient(135deg, #4f7d2c, #a7c957);
+  padding-bottom: 50px;
+}
+
+.market-hero-text {
+  text-align: center;
+  padding: 30px 20px 0;
+}
+
+.market-hero-text h1 {
+  font-size: 2.8rem;
+  margin: 0 0 12px;
+  line-height: 1.15;
+}
+
+.market-hero-text h1 span {
+  font-weight: 400;
+}
+
+.market-hero-text > p {
+  margin: 0 auto 28px;
+  max-width: 600px;
+  opacity: 0.95;
+}
+
+.search-bar {
+  max-width: 640px;
+  margin: 0 auto 16px;
+}
+
+.search-bar input,
+.filters select,
+.filters button {
+  font-family: inherit;
+}
+
+.search-bar input,
+.filters select {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-bar input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filters select option {
+  color: #111;
+}
+
+.filters .btn-outline {
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #fff;
+  padding: 12px 22px;
+}
+
+.market-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 40px 40px;
+  box-sizing: border-box;
+}
+
+.market-status {
+  text-align: center;
+  opacity: 0.9;
+}
+
+.market-status.error {
+  color: #ffb4a8;
+}
+
+.market-count {
+  opacity: 0.8;
+  font-size: 0.95rem;
+  margin: 0 0 16px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Glass card gaya ng homepage */
+.product-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-img {
+  height: 170px;
+  background: linear-gradient(135deg, #3a5a2a, #7ea552);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.product-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.product-category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #a7c957;
+  font-weight: 600;
+}
+
+.product-body h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.product-farmer {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+/* Price at buttons nakadikit sa ilalim ng card para pantay */
+.product-footer {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.product-price span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.product-meta {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stock {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.stock.in {
+  color: #a7f0b5;
+}
+
+.stock.out {
+  color: #ffb4a8;
+}
+
+.btn-small {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+  .market-hero-text h1 {
+    font-size: 2.1rem;
+  }
+  .market-content {
+    padding: 24px 20px 30px;
+  }
+  .filters select,
+  .filters .btn-outline {
+    flex: 1 1 140px;
+  }
+}
