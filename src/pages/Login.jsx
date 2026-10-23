@@ -18,20 +18,15 @@ export default function Login() {
 
     try {
       const res = await api.post('/login', { email, password });
-      console.log('LOGIN RESPONSE:', res.data);
 
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       navigate(res.data.user.role === 'farmer' ? '/farmer/products' : '/marketplace');
     } catch (err) {
-      console.log('LOGIN STATUS:', err.response?.status);
-      console.log('LOGIN ERROR DATA:', err.response?.data);
-      console.log('LOGIN ERROR MESSAGE:', err.message);
-
       setError(
         err.response?.data?.error ||
           err.response?.data?.message ||
-          `Login failed (${err.response?.status ?? 'no response'}): ${err.message}`
+          'Mali ang email o password.'
       );
     } finally {
       setLoading(false);
@@ -45,7 +40,7 @@ export default function Login() {
           <Link to="/">Home</Link>
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/login" className="active">Login</Link>
-          <Link to="/register" className="btn-primary">Get Started</Link>
+          <Link to="/register">Get Started</Link>
         </nav>
       </header>
 

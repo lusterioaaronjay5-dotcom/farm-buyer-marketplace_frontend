@@ -9,7 +9,7 @@ export default function Home() {
           <Link to="/" className="active">Home</Link>
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/login">Login</Link>
-          <Link to="/register" className="btn-primary">Get Started</Link>
+          <Link to="/register">Get Started</Link>
         </nav>
       </header>
 

@@ -54,7 +54,7 @@
 
 .farmer-card {
   width: calc(100% - 40px);
-  max-width: 720px;
+  max-width: 1000px;
   margin: -50px auto 40px;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.08);
@@ -65,36 +65,191 @@
   flex: 1;
 }
 
-.farmer-card h2 {
-  margin: 0 0 10px;
+.farmer-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
 }
 
-.farmer-card > p {
-  opacity: 0.9;
-  margin: 0 0 22px;
+.farmer-toolbar h2 {
+  margin: 0 0 4px;
 }
 
-.farmer-actions {
+.farmer-toolbar p {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.farmer-add {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.farmer-notice {
+  background: rgba(46, 125, 79, 0.35);
+  border: 1px solid #a7c957;
+  padding: 10px 14px;
+  border-radius: 6px;
   margin-bottom: 16px;
 }
 
-.btn-disabled {
-  background: #2e7d4f;
-  color: #fff;
-  border: none;
+.farmer-error {
+  background: rgba(200, 40, 40, 0.25);
+  border: 1px solid rgba(255, 120, 110, 0.6);
+  padding: 10px 12px;
   border-radius: 6px;
-  padding: 12px 20px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.farmer-form {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 22px;
+  margin-bottom: 24px;
+}
+
+.farmer-form h3 {
+  margin: 0 0 16px;
+}
+
+.farmer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+.farmer-grid .full {
+  grid-column: 1 / -1;
+}
+
+.farmer-form select,
+.farmer-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.farmer-form select option {
+  color: #111;
+}
+
+.farmer-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.farmer-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.farmer-form-actions button {
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 600;
-  opacity: 0.5;
+  cursor: pointer;
+  padding: 12px 20px;
+  border-radius: 6px;
+}
+
+.farmer-form-actions .btn-outline {
+  background: transparent;
+  color: #fff;
+}
+
+.farmer-form-actions .btn-primary {
+  border: none;
+}
+
+.farmer-form-actions button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.farmer-note {
-  font-size: 0.9rem;
+.farmer-empty {
   opacity: 0.8;
-  margin: 0;
+  text-align: center;
+  padding: 30px 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.farmer-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.farmer-table th,
+.farmer-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  vertical-align: middle;
+}
+
+.farmer-table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #a7c957;
+}
+
+.status {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.status.in {
+  color: #a7f0b5;
+}
+
+.status.out {
+  color: #ffb4a8;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+.btn-small-outline,
+.btn-small-danger {
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.btn-small-outline {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-small-danger {
+  background: rgba(200, 40, 40, 0.3);
+  color: #fff;
+  border: 1px solid rgba(255, 120, 110, 0.6);
 }
 
 @media (max-width: 700px) {
@@ -102,6 +257,9 @@
     font-size: 2rem;
   }
   .farmer-card {
-    padding: 22px 20px;
+    padding: 22px 18px;
+  }
+  .farmer-grid {
+    grid-template-columns: 1fr;
   }
 }

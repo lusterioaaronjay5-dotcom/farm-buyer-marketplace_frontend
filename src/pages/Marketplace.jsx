@@ -62,7 +62,7 @@ export default function Marketplace() {
             <Link to="/">Home</Link>
             <Link to="/marketplace" className="active">Marketplace</Link>
             <Link to="/login">Login</Link>
-            <Link to="/register" className="btn-primary">Get Started</Link>
+            <Link to="/register">Get Started</Link>
           </nav>
         </header>
 
