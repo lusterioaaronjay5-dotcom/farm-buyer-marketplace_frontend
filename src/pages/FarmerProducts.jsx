@@ -1,80 +1,98 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import './Home.css';
-import './Login.css';
+import FarmerLayout, { StatCard } from '../components/FarmerLayout';
+import { CATEGORIES, LOCATIONS } from '../constants';
+import useApiData from '../useApiData';
+import { invalidate } from '../dataCache';
 import './FarmerProducts.css';
+import './FarmerProductsModal.css';
 
 const emptyForm = {
   product_name: '',
   category: '',
-  unit: '',
   price: '',
+  unit: '',
   quantity_available: '',
   availability: 'available',
   location: '',
   description: '',
 };
 
-function getError(err, fallback) {
-  return err.response?.data?.error || err.response?.data?.message || fallback;
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('user'));
+  } catch {
+    return null;
+  }
+}
+
+// Idinadagdag ang kasalukuyang value kung wala sa listahan (halimbawa lumang data)
+function withCurrent(list, value) {
+  return value && !list.includes(value) ? [value, ...list] : list;
 }
 
 export default function FarmerProducts() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [pageError, setPageError] = useState('');
-  const [notice, setNotice] = useState('');
-  const [formOpen, setFormOpen] = useState(false);
+  const token = localStorage.getItem('token');
+  const user = getStoredUser();
+
+  const {
+    data,
+    loading,
+    error: loadError,
+    reload,
+  } = useApiData('farmer:products', '/farmer/products');
+
+  const products = data?.products || [];
+  const initialLoading = loading && !data;
+
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [error, setError] = useState('');
+  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
-  const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const saved = localStorage.getItem('user');
-
-    if (!token || !saved) {
+    if (!token || !user || user.role !== 'farmer') {
       navigate('/login');
-      return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const parsed = JSON.parse(saved);
-    if (parsed.role !== 'farmer') {
-      navigate('/marketplace');
-      return;
+  // Kapag bukas ang modal: i-lock ang scroll ng page at isara sa Escape
+  useEffect(() => {
+    if (!showForm) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function onKey(e) {
+      if (e.key === 'Escape') closeForm();
     }
+    window.addEventListener('keydown', onKey);
 
-    setUser(parsed);
-    loadProducts();
-  }, [navigate]);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showForm]);
 
-  async function loadProducts() {
-    setLoading(true);
-    setPageError('');
-    try {
-      const res = await api.get('/farmer/products');
-      setProducts(res.data.products || []);
-    } catch (err) {
-      setPageError(getError(err, 'Hindi ma-load ang produkto mo.'));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Pagkatapos ng save o delete: burahin ang lumang cache at i-refresh ang listahan
+  function refreshAfterChange() {
+    invalidate('farmer:products', 'farmer:dashboard');
+    reload();
   }
 
   function openAdd() {
     setEditingId(null);
     setForm(emptyForm);
-    setFormError('');
-    setNotice('');
-    setFormOpen(true);
+    setError('');
+    setShowForm(true);
   }
 
   function openEdit(p) {
@@ -82,274 +100,310 @@ export default function FarmerProducts() {
     setForm({
       product_name: p.product_name,
       category: p.category,
+      price: p.price,
       unit: p.unit,
-      price: String(p.price),
-      quantity_available: String(p.quantity_available),
+      quantity_available: p.quantity_available,
       availability: p.availability,
       location: p.location || '',
       description: p.description || '',
     });
-    setFormError('');
-    setNotice('');
-    setFormOpen(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setError('');
+    setShowForm(true);
   }
 
   function closeForm() {
-    setFormOpen(false);
+    setShowForm(false);
     setEditingId(null);
-    setFormError('');
+    setForm(emptyForm);
+    setError('');
+  }
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   async function handleSave(e) {
     e.preventDefault();
-    setFormError('');
+    setError('');
     setSaving(true);
 
     try {
       if (editingId) {
-        await api.post('/farmer/products/update', { ...form, product_id: editingId });
-        setNotice('Na-update ang produkto.');
+        await api.post('/farmer/products/update', { product_id: editingId, ...form });
       } else {
         await api.post('/farmer/products', form);
-        setNotice('Naidagdag ang produkto.');
       }
       closeForm();
-      await loadProducts();
+      refreshAfterChange();
     } catch (err) {
-      setFormError(getError(err, 'Hindi na-save ang produkto.'));
+      setError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Hindi na-save ang produkto.'
+      );
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleDelete(p) {
-    if (!window.confirm(`Burahin ang "${p.product_name}"?`)) return;
+  async function handleDelete(id) {
+    if (!window.confirm('Sigurado ka bang buburahin ang produktong ito?')) return;
 
-    setNotice('');
-    setPageError('');
+    setError('');
     try {
-      await api.post('/farmer/products/delete', { product_id: p.product_id });
-      setNotice('Nabura ang produkto.');
-      await loadProducts();
+      await api.post('/farmer/products/delete', { product_id: id });
+      refreshAfterChange();
     } catch (err) {
-      setPageError(getError(err, 'Hindi nabura ang produkto.'));
+      setError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Hindi na-delete ang produkto.'
+      );
     }
   }
 
-  function handleLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  }
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
 
-  if (!user) return null;
+    return products.filter((p) => {
+      const matchText =
+        !q ||
+        [p.product_name, p.category, p.location].some((v) =>
+          (v || '').toLowerCase().includes(q)
+        );
+      const matchCategory = !categoryFilter || p.category === categoryFilter;
+      const matchLocation =
+        !locationFilter || (p.location || '').includes(locationFilter);
+
+      return matchText && matchCategory && matchLocation;
+    });
+  }, [products, search, categoryFilter, locationFilter]);
+
+  const availableCount = products.filter((p) => p.availability === 'available').length;
+
+  if (!token || !user || user.role !== 'farmer') return null;
+
+  const shownError = error || loadError;
 
   return (
-    <div className="farmer-page">
-      <section className="farmer-banner">
-        <header className="nav">
-          <nav className="nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/farmer/products" className="active">My Products</Link>
-            <button type="button" className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
-          </nav>
-        </header>
+    <FarmerLayout>
+      <h1 className="page-title">My Products</h1>
 
-        <div className="farmer-hero-text">
-          <h1>
-            Welcome, <span>{user.full_name}</span>
-          </h1>
-          <p>Farmer Dashboard</p>
+      <div className="stat-row">
+        <StatCard label="Total Listings" value={products.length} />
+        <StatCard label="Available" value={availableCount} />
+        <StatCard label="Pending Orders" value="—" />
+      </div>
+
+      <div className="toolbar">
+        <h2>Product Listings</h2>
+
+        <div className="filter-row">
+          <input
+            type="text"
+            className="filter-input"
+            placeholder="Search your products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <select
+            className="filter-select"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="">Lahat ng category</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+
+          <select
+            className="filter-select"
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+          >
+            <option value="">Lahat ng lokasyon</option>
+            {LOCATIONS.map((l) => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+
+          <button type="button" className="btn btn-primary" onClick={openAdd}>
+            + Add Product
+          </button>
         </div>
-      </section>
+      </div>
 
-      <main className="farmer-card">
-        <div className="farmer-toolbar">
-          <div>
-            <h2>My Products</h2>
-            <p>Pamahalaan ang mga produktong ibinebenta mo.</p>
-          </div>
-          {!formOpen && (
-            <button type="button" className="btn-primary farmer-add" onClick={openAdd}>
-              + Add Product
-            </button>
-          )}
-        </div>
+      {!showForm && shownError && <div className="farmer-error">{shownError}</div>}
 
-        {notice && <div className="farmer-notice">{notice}</div>}
-        {pageError && <div className="farmer-error">{pageError}</div>}
+      {showForm && (
+        <div
+          className="fp-modal-backdrop"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) closeForm();
+          }}
+        >
+          <div
+            className="fp-modal card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="fp-modal-title"
+          >
+            <div className="fp-modal-head">
+              <h3 id="fp-modal-title">
+                {editingId ? 'I-edit ang produkto' : 'Bagong produkto'}
+              </h3>
+              <button
+                type="button"
+                className="fp-modal-close"
+                onClick={closeForm}
+                aria-label="Isara"
+              >
+                ×
+              </button>
+            </div>
 
-        {formOpen && (
-          <form className="farmer-form" onSubmit={handleSave}>
-            <h3>{editingId ? 'Edit Product' : 'Add Product'}</h3>
+            {error && <div className="farmer-error">{error}</div>}
 
-            {formError && <div className="farmer-error">{formError}</div>}
-
-            <div className="farmer-grid">
-              <div className="form-group">
-                <label htmlFor="product_name">Product name *</label>
+            <form onSubmit={handleSave}>
+              <div className="form-grid">
                 <input
-                  id="product_name"
                   name="product_name"
+                  placeholder="Pangalan ng produkto *"
                   value={form.product_name}
                   onChange={handleChange}
-                  placeholder="Fresh Tomatoes"
                   required
                 />
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="category">Category *</label>
-                <input
-                  id="category"
-                  name="category"
-                  value={form.category}
-                  onChange={handleChange}
-                  placeholder="Vegetables"
-                  required
-                />
-              </div>
+                <select name="category" value={form.category} onChange={handleChange} required>
+                  <option value="" disabled>Pumili ng category *</option>
+                  {withCurrent(CATEGORIES, form.category).map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
 
-              <div className="form-group">
-                <label htmlFor="price">Price *</label>
                 <input
-                  id="price"
                   name="price"
                   type="number"
-                  min="0"
                   step="0.01"
+                  min="0"
+                  placeholder="Presyo *"
                   value={form.price}
                   onChange={handleChange}
-                  placeholder="60.00"
                   required
                 />
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="unit">Unit *</label>
                 <input
-                  id="unit"
                   name="unit"
+                  placeholder="Unit (kg, bundle, piraso) *"
                   value={form.unit}
                   onChange={handleChange}
-                  placeholder="kg, bundle, piece"
                   required
                 />
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="quantity_available">Quantity available *</label>
                 <input
-                  id="quantity_available"
                   name="quantity_available"
                   type="number"
                   min="0"
-                  step="1"
+                  placeholder="Stock *"
                   value={form.quantity_available}
                   onChange={handleChange}
-                  placeholder="50"
                   required
                 />
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="availability">Availability *</label>
-                <select
-                  id="availability"
-                  name="availability"
-                  value={form.availability}
-                  onChange={handleChange}
-                >
+                <select name="availability" value={form.availability} onChange={handleChange}>
                   <option value="available">Available</option>
                   <option value="unavailable">Unavailable</option>
                 </select>
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="location">Location</label>
-                <input
-                  id="location"
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  placeholder="Socorro, Oriental Mindoro"
-                />
-              </div>
+                <select name="location" value={form.location} onChange={handleChange} required>
+                  <option value="" disabled>Pumili ng lokasyon *</option>
+                  {withCurrent(LOCATIONS, form.location).map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
 
-              <div className="form-group full">
-                <label htmlFor="description">Description</label>
                 <textarea
-                  id="description"
                   name="description"
+                  className="span-2"
+                  placeholder="Paglalarawan"
                   value={form.description}
                   onChange={handleChange}
-                  placeholder="Maikling detalye ng produkto"
                 />
               </div>
-            </div>
 
-            <div className="farmer-form-actions">
-              <button type="button" className="btn-outline" onClick={closeForm}>
-                Cancel
-              </button>
-              <button type="submit" className="btn-primary" disabled={saving}>
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-            </div>
-          </form>
-        )}
+              <div className="form-actions">
+                <button type="button" className="btn btn-ghost" onClick={closeForm}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? 'Sinasave...' : 'I-save'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-        {loading ? (
-          <p className="farmer-empty">Loading produkto...</p>
-        ) : products.length === 0 ? (
-          <p className="farmer-empty">Wala ka pang produkto. Pindutin ang + Add Product.</p>
-        ) : (
-          <div className="table-wrap">
-            <table className="farmer-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr key={p.product_id}>
-                    <td>{p.product_name}</td>
-                    <td>{p.category}</td>
-                    <td>₱{Number(p.price).toFixed(2)} / {p.unit}</td>
-                    <td>{p.quantity_available}</td>
-                    <td>
-                      <span className={p.availability === 'available' ? 'status in' : 'status out'}>
-                        {p.availability}
-                      </span>
-                    </td>
-                    <td className="actions">
-                      <button type="button" className="btn-small-outline" onClick={() => openEdit(p)}>
+      <div className="table-wrap">
+        <table className="product-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Availability</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {initialLoading && (
+              <tr>
+                <td colSpan="5" className="empty-cell">Naglo-load...</td>
+              </tr>
+            )}
+
+            {!initialLoading && filtered.length === 0 && (
+              <tr>
+                <td colSpan="5" className="empty-cell">
+                  Walang produktong tumugma. Pindutin ang + Add Product.
+                </td>
+              </tr>
+            )}
+
+            {!initialLoading &&
+              filtered.map((p) => (
+                <tr key={p.product_id}>
+                  <td>{p.product_name}</td>
+                  <td>₱{Number(p.price).toFixed(2)} / {p.unit}</td>
+                  <td>{p.quantity_available} {p.unit}</td>
+                  <td>
+                    <span
+                      className={`badge ${p.availability === 'available' ? 'badge-success' : 'badge-danger'}`}
+                    >
+                      {p.availability === 'available' ? 'Available' : 'Unavailable'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="actions">
+                      <button type="button" className="btn btn-ghost" onClick={() => openEdit(p)}>
                         Edit
                       </button>
-                      <button type="button" className="btn-small-danger" onClick={() => handleDelete(p)}>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(p.product_id)}
+                      >
                         Delete
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </main>
-
-      <footer className="footer">
-        © 2026 FarmConnect · Supporting local agriculture.
-      </footer>
-    </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </FarmerLayout>
   );
 }

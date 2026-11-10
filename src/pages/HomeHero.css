@@ -1,0 +1,139 @@
+/* Root ng Home page. Ito ang nananalo sa Home.css dahil mas huli itong ina-import. */
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background:
+    linear-gradient(rgba(8, 20, 12, 0.55), rgba(8, 20, 12, 0.75)),
+    url('/hero-home.jpg') center / cover no-repeat fixed;
+}
+
+/* Nasa gitna ang headline at button */
+.hero-banner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px 30px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 760px;
+}
+
+.hero-banner h1 {
+  margin: 0 0 16px;
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.hero-banner h1 span {
+  color: var(--color-accent);
+}
+
+.hero-banner p {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.hero-kicker {
+  margin: 0 0 8px;
+  color: var(--color-accent);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Pill button ng hero. Hindi ito gumagamit ng .btn dahil iba ang hugis at kulay nito. */
+.hero-cta {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 14px 34px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: #1b2a1f;
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.hero-cta:hover {
+  background: var(--color-primary);
+}
+
+.hero-banner-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hero-banner-buttons .hero-cta {
+  margin-top: 28px;
+}
+
+.hero-cta-outline {
+  background: transparent;
+  border-color: var(--color-text);
+}
+
+.hero-cta-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Tatlong glass card sa ibaba */
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: min(1100px, 90%);
+  margin: 0 auto 40px;
+}
+
+/* Kapareho ng .card sa index.css, pero may sariling laki ng radius at padding */
+.home-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-4);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: var(--glass-blur);
+}
+
+.home-stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.home-stat-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.home .footer {
+  padding: 12px;
+  text-align: center;
+  background: transparent;
+}
+
+@media (max-width: 800px) {
+  .hero-banner h1 {
+    font-size: 2.2rem;
+  }
+
+  .home-stats {
+    grid-template-columns: 1fr;
+  }
+}

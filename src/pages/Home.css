@@ -1,14 +1,17 @@
+/* =========================================================
+   1. BASE / HOME
+   ========================================================= */
 .home {
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: system-ui, sans-serif;
-  color: #fff;
+  font-family: var(--font-ui);
+  color: var(--color-text);
   background:
     linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
     url('/hero-farm.jpg') center / cover no-repeat,
-    linear-gradient(135deg, #4f7d2c, #a7c957);
+    linear-gradient(135deg, #4f7d2c, var(--color-accent));
 }
 
 .nav {
@@ -25,7 +28,7 @@
 }
 
 .nav-links a {
-  color: #fff;
+  color: var(--color-text);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -34,28 +37,32 @@
 }
 
 .nav-links a.active {
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid var(--color-text);
   padding-bottom: 2px;
 }
 
-.btn-primary {
-  background: #2e7d4f;
+/* Naka-scope sa .home para hindi maapektuhan ang .btn-primary sa ibang page */
+.home .btn-primary {
+  background: var(--color-primary);
   padding: 12px 22px;
-  border-radius: 6px;
-  color: #fff;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
   text-decoration: none;
   font-weight: 600;
 }
 
-.btn-outline {
-  border: 1px solid #fff;
+.home .btn-outline {
+  border: 1px solid var(--color-text);
   padding: 12px 22px;
-  border-radius: 6px;
-  color: #fff;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
   text-decoration: none;
   font-weight: 600;
 }
 
+/* =========================================================
+   2. HERO
+   ========================================================= */
 /* Hero ang kumukuha ng natitirang espasyo at nasa gitna ng screen */
 .hero {
   flex: 1;
@@ -91,6 +98,9 @@
   flex-wrap: wrap;
 }
 
+/* =========================================================
+   3. CARDS AT FOOTER
+   ========================================================= */
 /* Cards at footer nasa ibaba */
 .features {
   display: grid;
@@ -103,20 +113,21 @@
   box-sizing: border-box;
 }
 
-.card {
+/* Naka-scope sa .home para hindi magulo ang .card ng ibang page */
+.home .card {
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-md);
   padding: 24px;
   text-align: center;
 }
 
-.card h3 {
+.home .card h3 {
   margin: 0 0 8px;
 }
 
-.card p {
+.home .card p {
   margin: 0;
   opacity: 0.9;
   font-size: 0.95rem;
@@ -129,19 +140,270 @@
   opacity: 0.85;
 }
 
+/* =========================================================
+   4. RESPONSIVE
+   ========================================================= */
 @media (max-width: 700px) {
   .nav {
     padding: 16px 20px;
   }
+
   .nav-links {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
   }
+
   .hero {
     padding: 60px 20px 40px;
   }
+
   .hero h1 {
     font-size: 2.2rem;
   }
+}
+
+/* =========================================================
+   5. HEADER (landing pages): stable, transparent, laging visible
+   Pinapatay ang scroll animation ng nav at ng mga bahagi nito
+   ========================================================= */
+body:has(.landing) .lp-nav,
+body:has(.landing) .lp-nav .lp-logo,
+body:has(.landing) .lp-nav .lp-logo-mark,
+body:has(.landing) .lp-nav .lp-links a,
+body:has(.landing) .lp-nav .lp-link-btn,
+body:has(.landing) .lp-nav .lp-signin {
+  animation: none !important;
+}
+
+body:has(.landing) header.lp-nav {
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body:has(.landing) header.lp-nav .lp-logo,
+body:has(.landing) header.lp-nav .lp-links a,
+body:has(.landing) header.lp-nav .lp-link-btn {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+body:has(.landing) header.lp-nav .lp-links a.active {
+  color: #a9d47f !important;
+}
+
+body:has(.landing) header.lp-nav .lp-logo-mark {
+  background: #ffffff !important;
+  color: #245c3a !important;
+}
+
+body:has(.landing) header.lp-nav .lp-btn-primary {
+  background: #a9d47f !important;
+  color: #17301f !important;
+}
+
+/* =========================================================
+   6. LANDING PAGE: DARK GREEN SECTIONS (Home)
+   ========================================================= */
+
+/* --- About FarmConnect (Home) --- */
+#about {
+  background: #17301f;
+}
+
+#about .lp-about-copy h2 {
+  color: #ffffff;
+}
+
+#about .lp-about-copy p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+#about .lp-checks li {
+  color: #ffffff;
+}
+
+#about .lp-checks li::before {
+  background: #a9d47f;
+  color: #17301f;
+}
+
+#about .lp-btn-outline {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+#about .lp-btn-outline:hover {
+  background: #ffffff;
+  color: #17301f;
+  border-color: #ffffff;
+}
+
+/* --- Why Choose FarmConnect --- */
+#features {
+  background: #17301f;
+}
+
+#features .lp-section-head h2 {
+  color: #ffffff;
+}
+
+#features .lp-section-head p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* --- How it works (Home) --- */
+#how-it-works {
+  background: #17301f;
+}
+
+#how-it-works .lp-section-head h2 {
+  color: #ffffff;
+}
+
+#how-it-works .lp-step h3 {
+  color: #ffffff;
+}
+
+#how-it-works .lp-step p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+#how-it-works .lp-step-tag {
+  color: #a9d47f;
+}
+
+/* --- Eyebrow pills sa dark green sections (Home) --- */
+#about .lp-eyebrow,
+#features .lp-eyebrow,
+#how-it-works .lp-eyebrow {
+  background: rgba(255, 255, 255, 0.14);
+  color: #a9d47f;
+}
+
+/* --- CTA section (Support Local Farmers) --- */
+.landing section.lp-cta {
+  background: #17301f !important;
+}
+
+/* =========================================================
+   7. ABOUT PAGE: dark green sections
+   Kasama: Who We Are, Our Purpose, Mission and Vision,
+   How FarmConnect Works, at Our Commitment
+   ========================================================= */
+.about section.lp-section {
+  background: #17301f !important;
+}
+
+/* Heading at text sa dark sections */
+.about section.lp-section .ab-copy h2,
+.about section.lp-section .lp-section-head h2 {
+  color: #ffffff;
+}
+
+.about section.lp-section .ab-copy p,
+.about section.lp-section .lp-section-head p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Eyebrow pills sa lahat ng dark sections ng About */
+.about section.lp-section .lp-eyebrow {
+  background: rgba(255, 255, 255, 0.14);
+  color: #a9d47f;
+}
+
+/* How it works steps */
+.about section.lp-section .lp-step h3 {
+  color: #ffffff;
+}
+
+.about section.lp-section .lp-step p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.about section.lp-section .lp-step-tag {
+  color: #a9d47f;
+}
+
+/* Our Commitment: kapareho ng layout at style ng "How FarmConnect Works" */
+.about .ab-commit {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 0;
+  display: block;
+  text-align: center;
+}
+
+.about .ab-commit::before {
+  display: none;
+}
+
+/* Itago muna ang sirang larawan. Tanggalin ang rule na ito kapag may landing-farmer.jpg ka na sa public/ */
+.about .ab-commit > img {
+  display: none;
+}
+
+.about .ab-commit-copy {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.about .ab-commit-copy h2 {
+  margin-bottom: 0;
+  color: #ffffff;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  letter-spacing: -0.01em;
+}
+
+.about .ab-commit-copy p {
+  margin-top: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* =========================================================
+   8. SERVICES PAGE: dark green sections
+   Kasama: Core Services, For Farmers, For Buyers,
+   How It Works, Why FarmConnect, at CTA
+   ========================================================= */
+
+/* Tinanggal ang scroll reveal ng buong section para hindi maghalo ang kulay habang nag-a-appear */
+.services > section:not(.sv-hero) {
+  animation: none !important;
+}
+
+.services section.lp-section {
+  background: #17301f !important;
+}
+
+.services section.lp-section .sv-h2 {
+  color: #ffffff;
+}
+
+.services section.lp-section .sv-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.services section.lp-section .sv-eyebrow {
+  background: rgba(255, 255, 255, 0.14);
+  color: #a9d47f;
+}
+
+.services section.lp-section .sv-checks li {
+  color: #ffffff;
+}
+
+/* CTA sa Services page: dark green section, green box */
+.services > section:last-of-type {
+  background: #17301f !important;
+  border-top: none !important;
+  margin: 0 !important;
+}
+
+.services .sv-cta {
+  background: linear-gradient(135deg, #2e5c3b 0%, #4a8058 100%) !important;
+  box-shadow: none !important;
 }

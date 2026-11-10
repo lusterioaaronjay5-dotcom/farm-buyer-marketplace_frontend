@@ -1,38 +1,69 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api';
-import './Home.css';
+import Navbar from '../components/Navbar';
+import BuyerLayout from '../components/BuyerLayout';
+import ProductQuickView from '../components/ProductQuickView';
+import { CATEGORIES, LOCATIONS } from '../constants';
+import useApiData from '../useApiData';
+import { buildPriceBenchmarks, comparePrice } from '../priceCompare';
 import './Marketplace.css';
 
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('user'));
+  } catch {
+    return null;
+  }
+}
+
+function PriceBadge({ result, unit }) {
+  if (result.status === 'none') {
+    return <p className="mp-compare mp-muted">Walang sapat na ihahambing pa</p>;
+  }
+
+  if (result.status === 'cheaper') {
+    return (
+      <p className="mp-compare">
+        <span className="badge badge-success">Mas mura ng {result.pct}%</span>
+        <span className="mp-muted">kaysa average na ₱{result.avg.toFixed(2)} / {unit}</span>
+      </p>
+    );
+  }
+
+  if (result.status === 'pricier') {
+    return (
+      <p className="mp-compare">
+        <span className="badge badge-danger">Mas mahal ng {result.pct}%</span>
+        <span className="mp-muted">kaysa average na ₱{result.avg.toFixed(2)} / {unit}</span>
+      </p>
+    );
+  }
+
+  return (
+    <p className="mp-compare">
+      <span className="badge">Pasok sa karaniwang presyo</span>
+      <span className="mp-muted">average na ₱{result.avg.toFixed(2)} / {unit}</span>
+    </p>
+  );
+}
+
 export default function Marketplace() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const user = getStoredUser();
+  const isBuyer = user?.role === 'buyer';
+
+  // Cache-first: agad lalabas ang produkto kapag bumalik sa page
+  const { data, loading, error: loadError } = useApiData('buyer:products', '/products');
+  const products = Array.isArray(data) ? data : data?.products || [];
+  const error = loadError ? 'Hindi ma-load ang mga produkto.' : '';
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
+  const [selected, setSelected] = useState(null);
 
-  useEffect(() => {
-    api
-      .get('/products')
-      .then((res) => {
-        const list = Array.isArray(res.data) ? res.data : res.data.products || [];
-        setProducts(list);
-      })
-      .catch(() => setError('Hindi ma-load ang mga produkto.'))
-      .finally(() => setLoading(false));
-  }, []);
+  const closeQuickView = useCallback(() => setSelected(null), []);
 
-  const categories = useMemo(
-    () => [...new Set(products.map((p) => p.category).filter(Boolean))],
-    [products]
-  );
-
-  const locations = useMemo(
-    () => [...new Set(products.map((p) => p.location).filter(Boolean))],
-    [products]
-  );
+  const benchmarks = useMemo(() => buildPriceBenchmarks(products), [products]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -54,116 +85,114 @@ export default function Marketplace() {
     setLocation('');
   }
 
-  return (
-    <div className="market-page">
-      <section className="market-banner">
-        <header className="nav">
-          <nav className="nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/marketplace" className="active">Marketplace</Link>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Get Started</Link>
-          </nav>
-        </header>
+  const content = (
+    <div className="mp-page">
+      <section className="mp-hero">
+        <h1>
+          <strong>Fresh Products</strong> from Local Farmers
+        </h1>
+        <p>Hanapin ang produktong kailangan mo at direktang bumili sa farmer.</p>
 
-        <div className="market-hero-text">
-          <h1>
-            Fresh Products <span>from Local Farmers</span>
-          </h1>
-          <p>Hanapin ang produktong kailangan mo at direktang bumili sa farmer.</p>
+        <input
+          className="mp-search"
+          placeholder="Search produkto, farmer, o category..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search produkto, farmer, o category..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+        <div className="mp-filters">
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value="">All Categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
 
-          <div className="filters">
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="">All Categories</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+          <select value={location} onChange={(e) => setLocation(e.target.value)}>
+            <option value="">All Locations</option>
+            {LOCATIONS.map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
 
-            <select value={location} onChange={(e) => setLocation(e.target.value)}>
-              <option value="">All Locations</option>
-              {locations.map((l) => (
-                <option key={l} value={l}>{l}</option>
-              ))}
-            </select>
-
-            <button type="button" className="btn-outline" onClick={clearFilters}>
-              Clear
-            </button>
-          </div>
+          <button type="button" className="btn btn-ghost" onClick={clearFilters}>
+            Clear
+          </button>
         </div>
       </section>
 
-      <main className="market-content">
-        {loading && <p className="market-status">Loading produkto...</p>}
-        {error && <p className="market-status error">{error}</p>}
+      <section className="mp-body">
+        <p className="mp-count">{filtered.length} produkto ang nahanap</p>
 
-        {!loading && !error && (
-          <p className="market-count">{filtered.length} produkto ang nahanap</p>
-        )}
-
+        {loading && <p className="mp-muted">Naglo-load...</p>}
+        {error && <p className="mp-error">{error}</p>}
         {!loading && !error && filtered.length === 0 && (
-          <p className="market-status">Walang produktong tumugma sa hanap mo.</p>
+          <p className="mp-muted">Walang produktong nahanap.</p>
         )}
 
-        <div className="product-grid">
-          {filtered.map((p) => {
-            const inStock =
-              p.availability === 'available' && Number(p.quantity_available) > 0;
+        <div className="mp-grid">
+          {filtered.map((p) => (
+            <article className="card mp-card" key={p.product_id}>
+              <div
+                className="mp-open"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelected(p)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelected(p);
+                  }
+                }}
+              >
+                <div className="mp-img">No image</div>
 
-            return (
-              <article className="product-card" key={p.product_id}>
-                <div
-                  className="product-img"
-                  style={p.image_path ? { backgroundImage: `url(${p.image_path})` } : undefined}
-                >
-                  {!p.image_path && <span>No image</span>}
-                </div>
-
-                <div className="product-body">
-                  <span className="product-category">{p.category}</span>
+                <div className="mp-info">
+                  <span className="badge badge-accent mp-cat">{p.category}</span>
                   <h3>{p.product_name}</h3>
-                  <p className="product-farmer">
+                  <p className="mp-meta">
                     {p.farmer_name} · {p.location}
                   </p>
-
-                  <div className="product-footer">
-                    <div className="product-price">
-                      ₱{Number(p.price).toFixed(2)}
-                      <span> / {p.unit}</span>
-                    </div>
-
-                    <div className="product-meta">
-                      <span className={inStock ? 'stock in' : 'stock out'}>
-                        {inStock ? `In stock: ${p.quantity_available}` : 'Unavailable'}
-                      </span>
-                      <Link
-                        to={`/product?id=${p.product_id}`}
-                        className="btn-primary btn-small"
-                      >
-                        View Details
-                      </Link>
-                    </div>
-                  </div>
+                  <p className="mp-price">
+                    ₱{Number(p.price).toFixed(2)} <span>/ {p.unit}</span>
+                  </p>
+                  <PriceBadge result={comparePrice(p, benchmarks)} unit={p.unit} />
                 </div>
-              </article>
-            );
-          })}
-        </div>
-      </main>
+              </div>
 
-      <footer className="footer">
-        © 2026 FarmConnect · Supporting local agriculture.
-      </footer>
+              <div className="mp-foot">
+                <span
+                  className={`badge ${p.quantity_available > 0 ? 'badge-success' : 'badge-danger'}`}
+                >
+                  In stock: {p.quantity_available}
+                </span>
+                <Link className="btn btn-primary mp-btn" to={`/product?id=${p.product_id}`}>
+                  View Details
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {selected && (
+        <ProductQuickView product={selected} products={products} onClose={closeQuickView} />
+      )}
+    </div>
+  );
+
+  if (isBuyer) {
+    return <BuyerLayout>{content}</BuyerLayout>;
+  }
+
+  return (
+    <div className="mp-guest">
+      <Navbar />
+      {content}
     </div>
   );
 }

@@ -1,0 +1,232 @@
+/* ========== PAGE HERO ========== */
+.ab-hero {
+  padding: 150px 0 88px;
+  background:
+    linear-gradient(90deg, rgba(20, 35, 22, 0.78) 0%, rgba(20, 35, 22, 0.45) 100%),
+    url('/hero-home.jpg') center / cover no-repeat;
+}
+
+.ab-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.ab-hero h1 {
+  font-size: clamp(2.1rem, 4.2vw, 3.3rem);
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+.ab-hero h1 span {
+  color: #a9d47f;
+}
+
+.ab-hero p {
+  max-width: 540px;
+  margin-top: 20px;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.ab-hero .lp-eyebrow {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.ab-hero .lp-btn-outline {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.ab-hero .lp-btn-outline:hover {
+  background: #ffffff;
+  color: var(--lp-forest);
+  border-color: #ffffff;
+}
+
+.ab-hero-media img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 28px;
+  box-shadow: var(--lp-shadow-lg);
+}
+
+/* ========== WHO WE ARE ========== */
+.ab-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.ab-media img {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  border-radius: 28px;
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.ab-copy h2 {
+  margin-bottom: 18px;
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  letter-spacing: -0.01em;
+}
+
+.ab-copy p {
+  color: var(--lp-muted);
+}
+
+.ab-copy p + p {
+  margin-top: 14px;
+}
+
+/* ========== MISSION AND VISION ========== */
+.ab-mv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.ab-card {
+  padding: 40px 36px;
+  border: 1px solid var(--lp-line);
+  border-radius: 24px;
+  background: var(--lp-cream);
+  box-shadow: var(--lp-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ab-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.ab-card-label {
+  margin-bottom: 10px;
+  color: var(--lp-forest);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ab-card h3 {
+  margin-bottom: 14px;
+  font-size: 1.5rem;
+}
+
+.ab-card > p:last-child {
+  color: var(--lp-muted);
+}
+
+/* ========== HOW IT WORKS (4 steps) ========== */
+.ab-steps {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.ab-steps::before {
+  left: 12.5%;
+  right: 12.5%;
+}
+
+/* ========== COMMITMENT ========== */
+.ab-commit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 460px;
+  overflow: hidden;
+  border-radius: 32px;
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.ab-commit > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ab-commit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(36, 92, 58, 0.92) 0%, rgba(36, 92, 58, 0.6) 55%, rgba(36, 92, 58, 0.2) 100%);
+}
+
+.ab-commit-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  padding: 56px;
+  color: #fff;
+}
+
+.ab-commit-copy h2 {
+  margin-bottom: 16px;
+  color: #fff;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  letter-spacing: -0.01em;
+}
+
+.ab-commit-copy p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Eyebrow sa madilim na background */
+.ab-eyebrow-light {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 860px) {
+  .ab-hero {
+    padding-top: 120px;
+  }
+
+  .ab-hero-grid,
+  .ab-two-col,
+  .ab-mv-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .ab-hero-media img,
+  .ab-media img {
+    height: 380px;
+  }
+
+  .ab-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .ab-steps::before {
+    display: none;
+  }
+
+  .ab-commit {
+    min-height: 0;
+  }
+
+  .ab-commit-copy {
+    padding: 40px 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .ab-card {
+    padding: 28px 24px;
+  }
+
+  .ab-commit-copy {
+    padding: 32px 22px;
+  }
+}

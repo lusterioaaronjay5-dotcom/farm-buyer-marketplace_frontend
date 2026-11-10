@@ -1,82 +1,204 @@
-/* Register.css */
+/* Register page – gumagamit ng layout at input styles mula sa Login.css */
 
-/* Dalawang column para sa phone/address at password/confirm */
-.register-form-row {
+.register-page .login-form-side {
+  align-items: flex-start;
+  padding: 110px 24px 48px;
+}
+
+.register-page .login-card {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 520px !important;
+  margin: 0 auto;
+  padding: 24px 28px;
+}
+
+.register-page .login-card h1 {
+  font-size: 1.5rem;
+}
+
+.register-page .login-sub {
+  margin-top: 4px;
+  font-size: 0.88rem;
+}
+
+.register-page .login-visual h2 {
+  max-width: 520px;
+}
+
+/* Mas compact na field spacing at input */
+.register-page .login-field {
+  margin-top: 10px;
+  gap: 5px;
+}
+
+.register-page .login-field label {
+  font-size: 0.85rem;
+}
+
+.register-page .login-input input {
+  height: 42px;
+  border-radius: 12px;
+}
+
+.register-page .login-toggle {
+  width: 30px;
+  height: 30px;
+}
+
+.register-page .login-submit {
+  height: 44px;
+  margin-top: 14px;
+}
+
+.register-page .login-foot {
+  margin-top: 12px;
+}
+
+/* Account type: dalawang selectable na card */
+.reg-roles {
+  margin: 10px 0 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.reg-roles legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.reg-role-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 10px;
 }
 
-/* Select at textarea (kung gagamitin sa ibang page) */
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-  border-radius: 6px;
-  padding: 12px 14px;
-  font-size: 1rem;
-  font-family: inherit;
-  outline: none;
-}
-
-.form-group select option {
-  color: #111;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 70px;
-}
-
-/* Role selector */
-.form-group .role-options {
+.reg-role {
+  position: relative;
   display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reg-role:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+/* Itago ang native radio pero nandoon pa rin para sa keyboard at screen reader */
+.reg-role input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reg-role.is-selected {
+  border-color: var(--lp-fresh);
+  background: rgba(118, 169, 76, 0.22);
+  box-shadow: 0 0 0 3px rgba(118, 169, 76, 0.25);
+}
+
+.reg-role:focus-within {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+.reg-role-icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.reg-role-text {
+  display: block;
+  padding-right: 22px;
+}
+
+.reg-role-text strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.reg-role-text small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.reg-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  color: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.reg-role.is-selected .reg-check {
+  background: var(--lp-fresh);
+  border-color: var(--lp-fresh);
+  color: #fff;
+}
+
+/* Required marker */
+.reg-req {
+  color: #cde8a8;
+}
+
+/* Dalawang column para sa password at confirm password */
+.reg-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.form-group .role-option {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 0;
-  padding: 14px 12px;
-  box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+/* Live feedback sa ilalim ng input */
+.reg-hint {
+  margin-top: 2px;
+  font-size: 0.8rem;
 }
 
-.form-group .role-option:hover {
-  background: rgba(255, 255, 255, 0.14);
+.reg-hint.is-bad {
+  color: #ffb4a2;
 }
 
-.form-group .role-option input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  padding: 0;
-  flex: 0 0 auto;
-  accent-color: #a7c957;
-  cursor: pointer;
+.reg-hint.is-ok {
+  color: #cde8a8;
 }
 
-.form-group .role-option.selected {
-  border-color: #a7c957;
-  background: rgba(46, 125, 79, 0.45);
-}
-
-@media (max-width: 700px) {
-  .register-form-row {
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .reg-role-grid,
+  .reg-form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .register-page .login-form-side {
+    padding: 100px 16px 40px;
   }
 }

@@ -1,265 +1,123 @@
-.farmer-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-family: system-ui, sans-serif;
-  color: #fff;
-  background: #1a1d1a;
-}
-
-.farmer-banner {
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-    url('/hero-farm.jpg') center 35% / cover no-repeat,
-    linear-gradient(135deg, #4f7d2c, #a7c957);
-  padding-bottom: 80px;
-}
-
-.farmer-hero-text {
-  text-align: center;
-  padding: 30px 20px 0;
-}
-
-.farmer-hero-text h1 {
-  font-size: 2.6rem;
-  margin: 0 0 10px;
-}
-
-.farmer-hero-text h1 span {
-  font-weight: 400;
-}
-
-.farmer-hero-text p {
-  margin: 0;
+.toolbar h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 0.9rem;
-  color: #a7c957;
-  font-weight: 600;
+  color: var(--bd-ink);
 }
 
-.logout-btn {
-  background: transparent;
-  border: 1px solid #fff;
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.farmer-card {
-  width: calc(100% - 40px);
-  max-width: 1000px;
-  margin: -50px auto 40px;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 28px 32px;
-  flex: 1;
-}
-
-.farmer-toolbar {
+.filter-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 18px;
 }
 
-.farmer-toolbar h2 {
-  margin: 0 0 4px;
+.filter-input,
+.filter-select {
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--bd-line);
+  border-radius: 10px;
+  background: var(--bd-white);
+  color: var(--bd-ink);
+  font: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.farmer-toolbar p {
-  margin: 0;
-  opacity: 0.85;
+.filter-input {
+  flex: 1;
+  min-width: 200px;
 }
 
-.farmer-add {
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 1rem;
+.filter-input::placeholder {
+  color: var(--bd-faint);
 }
 
-.farmer-notice {
-  background: rgba(46, 125, 79, 0.35);
-  border: 1px solid #a7c957;
-  padding: 10px 14px;
-  border-radius: 6px;
-  margin-bottom: 16px;
+.filter-input:hover,
+.filter-select:hover {
+  border-color: #cfd8c8;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  border-color: var(--bd-fresh);
+  box-shadow: 0 0 0 3px rgba(118, 169, 76, 0.18);
 }
 
 .farmer-error {
-  background: rgba(200, 40, 40, 0.25);
-  border: 1px solid rgba(255, 120, 110, 0.6);
-  padding: 10px 12px;
-  border-radius: 6px;
   margin-bottom: 16px;
-  font-size: 0.95rem;
-}
-
-.farmer-form {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 11px 14px;
+  border: 1px solid #f5c2c2;
   border-radius: 10px;
-  padding: 22px;
-  margin-bottom: 24px;
-}
-
-.farmer-form h3 {
-  margin: 0 0 16px;
-}
-
-.farmer-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
-}
-
-.farmer-grid .full {
-  grid-column: 1 / -1;
-}
-
-.farmer-form select,
-.farmer-form textarea {
-  width: 100%;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-  border-radius: 6px;
-  padding: 12px 14px;
-  font-size: 1rem;
-  font-family: inherit;
-  outline: none;
-}
-
-.farmer-form select option {
-  color: #111;
-}
-
-.farmer-form textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.farmer-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.farmer-form-actions button {
-  font-family: inherit;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 12px 20px;
-  border-radius: 6px;
-}
-
-.farmer-form-actions .btn-outline {
-  background: transparent;
-  color: #fff;
-}
-
-.farmer-form-actions .btn-primary {
-  border: none;
-}
-
-.farmer-form-actions button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.farmer-empty {
-  opacity: 0.8;
-  text-align: center;
-  padding: 30px 0;
+  background: #fdecec;
+  color: #a32424;
+  font-size: 14px;
 }
 
 .table-wrap {
   overflow-x: auto;
+  background: var(--bd-white);
+  border: 1px solid var(--bd-line);
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(37, 43, 37, 0.06);
 }
 
-.farmer-table {
+.product-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 14px;
 }
 
-.farmer-table th,
-.farmer-table td {
-  padding: 12px 10px;
+.product-table th,
+.product-table td {
+  padding: 14px 16px;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   vertical-align: middle;
+  border-bottom: 1px solid #eef2ea;
+  color: var(--bd-ink);
 }
 
-.farmer-table th {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #a7c957;
-}
-
-.status {
+.product-table th {
+  background: var(--bd-soft);
+  color: var(--bd-muted);
+  font-size: 12px;
   font-weight: 600;
-  font-size: 0.85rem;
-  text-transform: capitalize;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.status.in {
-  color: #a7f0b5;
+.product-table tbody tr:hover {
+  background: #f8faf6;
 }
 
-.status.out {
-  color: #ffb4a8;
+.product-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.empty-cell {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--bd-muted);
 }
 
 .actions {
-  white-space: nowrap;
+  display: flex;
+  gap: 8px;
 }
 
-.btn-small-outline,
-.btn-small-danger {
-  font-family: inherit;
-  font-size: 0.85rem;
-  padding: 7px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-left: 6px;
+.actions .btn {
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
-.btn-small-outline {
-  background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.btn-small-danger {
-  background: rgba(200, 40, 40, 0.3);
-  color: #fff;
-  border: 1px solid rgba(255, 120, 110, 0.6);
-}
-
-@media (max-width: 700px) {
-  .farmer-hero-text h1 {
-    font-size: 2rem;
-  }
-  .farmer-card {
-    padding: 22px 18px;
-  }
-  .farmer-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 800px) {
+  .filter-input {
+    min-width: 100%;
   }
 }

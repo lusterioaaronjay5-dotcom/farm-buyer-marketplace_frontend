@@ -1,19 +1,38 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import HomeRoute from './pages/HomeRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Marketplace from './pages/Marketplace';
 import FarmerProducts from './pages/FarmerProducts';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import MyOrders from './pages/MyOrders';
+import Profile from './pages/Profile';
+import ReceivedOrders from './pages/ReceivedOrders';
+import Dashboard from './pages/Dashboard';
+import BuyerDashboard from './pages/BuyerDashboard';
+import About from './pages/About';
+import Service from './pages/Service';
+import Inbox from './pages/Inbox';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
         <Route path="/farmer/products" element={<FarmerProducts />} />
+        <Route path="/farmer/orders" element={<ReceivedOrders />} />
+        <Route path="/product" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/service" element={<Service />} />
       </Routes>
     </BrowserRouter>
   );

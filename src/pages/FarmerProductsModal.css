@@ -1,0 +1,220 @@
+/* ===== Popup card para sa Add at Edit product (light) ===== */
+
+.fp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(20, 30, 22, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fp-fade 0.2s ease both;
+}
+
+.farmer-shell .fp-modal.card {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--bd-line);
+  border-radius: 18px;
+  background: var(--bd-white);
+  box-shadow: 0 30px 80px rgba(20, 30, 22, 0.22);
+  animation: fp-pop 0.25s ease both;
+}
+
+/* ===== Header ===== */
+.fp-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 26px 18px;
+  border-bottom: 1px solid var(--bd-line);
+}
+
+.fp-modal-head h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--bd-ink);
+}
+
+.fp-modal-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border: 1px solid var(--bd-line);
+  border-radius: 50%;
+  background: var(--bd-white);
+  color: var(--bd-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.fp-modal-close:hover {
+  background: var(--bd-soft);
+  color: var(--bd-ink);
+}
+
+/* ===== Body ===== */
+.fp-modal form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.fp-modal .farmer-error {
+  margin: 18px 26px 0;
+}
+
+.fp-modal .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 22px 26px;
+  overflow-y: auto;
+}
+
+.fp-modal .form-grid .span-2 {
+  grid-column: span 2;
+}
+
+/* ===== Inputs ===== */
+.fp-modal .form-grid input,
+.fp-modal .form-grid select,
+.fp-modal .form-grid textarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--bd-line);
+  border-radius: 10px;
+  background: var(--bd-white);
+  color: var(--bd-ink);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fp-modal .form-grid textarea {
+  min-height: 96px;
+  height: auto;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.fp-modal .form-grid input::placeholder,
+.fp-modal .form-grid textarea::placeholder {
+  color: var(--bd-faint);
+}
+
+.fp-modal .form-grid select option {
+  color: var(--bd-ink);
+}
+
+.fp-modal .form-grid input:hover,
+.fp-modal .form-grid select:hover,
+.fp-modal .form-grid textarea:hover {
+  border-color: #cfd8c8;
+}
+
+.fp-modal .form-grid input:focus,
+.fp-modal .form-grid select:focus,
+.fp-modal .form-grid textarea:focus {
+  border-color: var(--bd-fresh);
+  box-shadow: 0 0 0 4px rgba(118, 169, 76, 0.18);
+}
+
+/* ===== Footer ===== */
+.fp-modal .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 26px 20px;
+  border-top: 1px solid var(--bd-line);
+  background: var(--bd-soft);
+}
+
+.fp-modal .form-actions .btn {
+  min-width: 124px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* ===== Animations ===== */
+@keyframes fp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 620px) {
+  .farmer-shell .fp-modal.card {
+    max-height: calc(100vh - 24px);
+  }
+
+  .fp-modal-head {
+    padding: 18px 18px 14px;
+  }
+
+  .fp-modal .farmer-error {
+    margin: 14px 18px 0;
+  }
+
+  .fp-modal .form-grid {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .fp-modal .form-grid .span-2 {
+    grid-column: span 1;
+  }
+
+  .fp-modal .form-actions {
+    padding: 14px 18px 18px;
+  }
+
+  .fp-modal .form-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-modal-backdrop,
+  .farmer-shell .fp-modal.card {
+    animation: none;
+  }
+}

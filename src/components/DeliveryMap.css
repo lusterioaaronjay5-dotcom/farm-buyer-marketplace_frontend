@@ -1,0 +1,43 @@
+.dmap-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dmap-map {
+  width: 100%;
+  height: 280px;
+  border: 1px solid #dfe5d6;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #eef3e8;
+}
+
+.dmap-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.dmap-coords {
+  color: #6b7568;
+}
+
+.dmap-link {
+  color: #2f5424;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dmap-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .dmap-map {
+    height: 220px;
+  }
+}

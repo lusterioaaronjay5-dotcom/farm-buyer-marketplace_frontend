@@ -1,0 +1,445 @@
+﻿
+/* Tokens: parehong kulay ng buyer side */
+.farmer-shell {
+  --bd-forest: #245c3a;
+  --bd-fresh: #76a94c;
+  --bd-bg: #f5f7f2;
+  --bd-white: #ffffff;
+  --bd-ink: #252b25;
+  --bd-muted: #6b756b;
+  --bd-faint: #8a948a;
+  --bd-line: #e5eae2;
+  --bd-soft: #f1f5ee;
+
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: var(--bd-bg);
+  color: var(--bd-ink);
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* ===== Sidebar ===== */
+.farmer-sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: var(--bd-white);
+  border-right: 1px solid var(--bd-line);
+}
+
+.fs-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 22px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--bd-forest);
+}
+
+.fs-logo {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--bd-forest), var(--bd-fresh));
+  color: #fff;
+}
+
+.fs-logo svg {
+  width: 20px;
+  height: 20px;
+}
+
+.fs-section {
+  margin: 0 0 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bd-faint);
+}
+
+.fs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fs-link,
+.fs-logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bd-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.fs-link:hover {
+  background: var(--bd-soft);
+  color: var(--bd-ink);
+}
+
+.fs-link.is-active {
+  background: rgba(118, 169, 76, 0.14);
+  color: var(--bd-forest);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--bd-fresh);
+}
+
+.fs-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  flex: 0 0 20px;
+}
+
+.fs-logout {
+  margin-top: auto;
+  border-color: var(--bd-line);
+}
+
+.fs-logout:hover {
+  color: #b42323;
+  border-color: #f0c4c4;
+  background: #fdf3f3;
+}
+
+/* ===== Topbar ===== */
+.farmer-main-wrap {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.farmer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 28px;
+  box-sizing: border-box;
+  background: var(--bd-white);
+  border-bottom: 1px solid var(--bd-line);
+}
+
+.fs-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fs-menu-btn {
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--bd-line);
+  border-radius: 10px;
+  background: var(--bd-white);
+  color: var(--bd-ink);
+  cursor: pointer;
+}
+
+.fs-crumb {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--bd-ink);
+}
+
+.fs-user {
+  position: relative;
+}
+
+.fs-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px 5px 5px;
+  border: 1px solid var(--bd-line);
+  border-radius: 999px;
+  background: var(--bd-white);
+  color: var(--bd-ink);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.fs-user-btn:hover {
+  background: var(--bd-soft);
+}
+
+.fs-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bd-forest);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fs-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fs-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 70;
+  min-width: 200px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bd-white);
+  border: 1px solid var(--bd-line);
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(37, 43, 37, 0.12);
+}
+
+.fs-dropdown a,
+.fs-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bd-ink);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fs-dropdown a:hover,
+.fs-dropdown button:hover {
+  background: var(--bd-soft);
+}
+
+/* ===== Main ===== */
+.farmer-main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 28px 32px 40px;
+  box-sizing: border-box;
+}
+
+.fs-backdrop {
+  display: none;
+}
+
+/* ===== Global classes sa loob ng farmer portal (light) ===== */
+.farmer-shell .page-title {
+  margin: 0 0 18px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--bd-ink);
+}
+
+.farmer-shell .card {
+  background: var(--bd-white);
+  border: 1px solid var(--bd-line);
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(37, 43, 37, 0.06);
+  color: var(--bd-ink);
+}
+
+.farmer-shell .stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.farmer-shell .stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  background: var(--bd-white);
+  border: 1px solid var(--bd-line);
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(37, 43, 37, 0.06);
+}
+
+.farmer-shell .stat-card span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bd-muted);
+}
+
+.farmer-shell .stat-card strong {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--bd-forest);
+}
+
+.farmer-shell .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.farmer-shell .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.farmer-shell .btn-primary {
+  background: var(--bd-forest);
+  color: #fff;
+  border-color: var(--bd-forest);
+}
+
+.farmer-shell .btn-primary:hover:not(:disabled) {
+  background: #1b4a2e;
+}
+
+.farmer-shell .btn-ghost {
+  background: var(--bd-white);
+  color: var(--bd-ink);
+  border-color: var(--bd-line);
+}
+
+.farmer-shell .btn-ghost:hover:not(:disabled) {
+  background: var(--bd-soft);
+}
+
+.farmer-shell .btn-danger {
+  background: var(--bd-white);
+  color: #a32424;
+  border-color: #f0c4c4;
+}
+
+.farmer-shell .btn-danger:hover:not(:disabled) {
+  background: #fdecec;
+}
+
+.farmer-shell .badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.farmer-shell .badge-warning {
+  background: #fff4dc;
+  color: #8a5a00;
+}
+
+.farmer-shell .badge-accent {
+  background: rgba(118, 169, 76, 0.16);
+  color: var(--bd-forest);
+}
+
+.farmer-shell .badge-success {
+  background: #e3f4e6;
+  color: #1d6b35;
+}
+
+.farmer-shell .badge-danger {
+  background: #fde4e4;
+  color: #a32424;
+}
+
+.farmer-shell .badge-neutral {
+  background: #eef1ec;
+  color: var(--bd-muted);
+}
+
+/* ===== Mobile: collapsible drawer ===== */
+@media (max-width: 800px) {
+  .farmer-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .farmer-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .farmer-shell.nav-open .farmer-sidebar {
+    transform: none;
+  }
+
+  .fs-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(20, 30, 22, 0.35);
+  }
+
+  .fs-menu-btn {
+    display: grid;
+  }
+
+  .fs-name {
+    display: none;
+  }
+
+  .farmer-main-wrap {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .farmer-main {
+    overflow: visible;
+    padding: 18px 16px 30px;
+  }
+
+  .farmer-topbar {
+    padding: 12px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .farmer-sidebar {
+    transition: none;
+  }
+}

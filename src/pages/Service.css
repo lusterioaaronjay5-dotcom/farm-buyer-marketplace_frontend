@@ -1,0 +1,390 @@
+/* Services page – naka-scope sa .services, gumagamit ng tokens mula sa Landing.css */
+
+.services .sv-eyebrow {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(118, 169, 76, 0.18);
+  color: var(--lp-forest);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.services .sv-h2 {
+  margin: 14px 0 0;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1.2;
+  color: var(--lp-dark);
+  font-weight: 700;
+}
+
+.services .sv-title {
+  margin: 18px 0;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  line-height: 1.15;
+  color: var(--lp-dark);
+  font-weight: 700;
+}
+
+.services .sv-title span {
+  color: var(--lp-fresh);
+}
+
+.services .sv-text {
+  color: var(--lp-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.services .sv-head {
+  max-width: 680px;
+  margin-bottom: 48px;
+}
+
+/* ===== Hero ===== */
+.services .sv-hero {
+  padding: 72px 0 56px;
+  background:
+    linear-gradient(90deg, rgba(20, 35, 22, 0.78) 0%, rgba(20, 35, 22, 0.45) 100%),
+    url('/hero-home.jpg') center / cover no-repeat;
+}
+
+.services .sv-hero .sv-title,
+.services .sv-hero h1 {
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+.services .sv-hero .sv-title span,
+.services .sv-hero h1 span {
+  color: #a9d47f;
+}
+
+.services .sv-hero .sv-text {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.services .sv-hero .sv-eyebrow {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.services .sv-hero .lp-btn-outline {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.services .sv-hero .lp-btn-outline:hover {
+  background: #ffffff;
+  color: var(--lp-forest);
+  border-color: #ffffff;
+}
+
+.services .sv-hero-grid,
+.services .sv-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.services .sv-split.reverse .sv-media {
+  order: 2;
+}
+
+.services .sv-media img {
+  display: block;
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.services .sv-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.services .sv-actions.center {
+  justify-content: center;
+}
+
+/* ===== Cards ===== */
+.services .sv-grid,
+.services .sv-why {
+  display: grid;
+  gap: 24px;
+}
+
+.services .sv-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.services .sv-why {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.services .sv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 28px;
+  background: var(--lp-white);
+  border: 1px solid var(--lp-line);
+  border-radius: 20px;
+  box-shadow: var(--lp-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.services .sv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.services .sv-card h3 {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+  color: var(--lp-dark);
+}
+
+.services .sv-card p {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.services .sv-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: rgba(118, 169, 76, 0.15);
+  color: var(--lp-forest);
+}
+
+/* ===== Checklist ===== */
+.services .sv-checks {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.services .sv-checks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--lp-dark);
+  line-height: 1.5;
+}
+
+.services .sv-checks li > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--lp-fresh);
+  color: #ffffff;
+}
+
+.services .sv-checks svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== Steps ===== */
+.services .sv-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.services .sv-step {
+  padding: 28px;
+  background: var(--lp-white);
+  border: 1px solid var(--lp-line);
+  border-radius: 20px;
+  box-shadow: var(--lp-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.services .sv-step:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.services .sv-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.services .sv-step-no {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--lp-fresh);
+}
+
+.services .sv-step h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  color: var(--lp-dark);
+}
+
+.services .sv-step p {
+  margin: 0;
+  color: var(--lp-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ===== CTA ===== */
+.services .sv-cta {
+  padding: 56px 40px;
+  text-align: center;
+  background: var(--lp-forest);
+  border-radius: 28px;
+  box-shadow: var(--lp-shadow-lg);
+}
+
+.services .sv-cta h2 {
+  margin: 0 0 14px;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  color: #ffffff;
+}
+
+.services .sv-cta p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.7;
+}
+
+.services .sv-cta .sv-actions {
+  margin-top: 28px;
+}
+
+/* Explore Marketplace: puting button sa berdeng CTA */
+.services .sv-cta .lp-btn-primary,
+.services .sv-cta .lp-btn-primary:hover {
+  background: #ffffff;
+  color: var(--lp-forest);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* Join as a Farmer: puting outline, nakikita kahit walang hover */
+.services .sv-cta .lp-btn-outline {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.services .sv-cta .lp-btn-outline:hover {
+  background: #ffffff;
+  color: var(--lp-forest);
+  border-color: #ffffff;
+}
+
+/* ===== Animations (kapareho ng About at Home) ===== */
+
+/* Hero: lp-rise pagka-load */
+.services .sv-hero .sv-copy {
+  animation: lp-rise 0.8s ease both;
+}
+
+.services .sv-hero .sv-media {
+  animation: lp-rise 0.8s ease both;
+  animation-delay: 0.15s;
+}
+
+/* Sections: scroll reveal, pareho sa lp-reveal ng About */
+.services > section:not(.sv-hero) {
+  animation: lp-rise 0.8s ease both;
+}
+
+@supports (animation-timeline: view()) {
+  .services > section:not(.sv-hero) {
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+
+/* Hindi matatakpan ng sticky nav ang heading */
+.services #core-services {
+  scroll-margin-top: 96px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1000px) {
+  .services .sv-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .services .sv-why,
+  .services .sv-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .services .sv-hero-grid,
+  .services .sv-split {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .services .sv-split.reverse .sv-media {
+    order: 0;
+  }
+
+  .services .sv-media img {
+    height: 320px;
+  }
+
+  .services .sv-hero {
+    padding: 48px 0 40px;
+  }
+}
+
+@media (max-width: 560px) {
+  .services .sv-grid,
+  .services .sv-why,
+  .services .sv-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .services .sv-cta {
+    padding: 40px 24px;
+  }
+
+  .services .sv-media img {
+    height: 240px;
+  }
+}
+
+/* ========== HERO: espasyo sa itaas para sa fixed nav ========== */
+.services .sv-hero {
+  padding-top: 160px;
+  padding-bottom: 96px;
+}
+
+@media (max-width: 860px) {
+  .services .sv-hero {
+    padding-top: 140px;
+    padding-bottom: 72px;
+  }
+}

@@ -1,225 +1,325 @@
-.market-page {
+/* ===== GUEST LAYOUT ===== */
+.mp-guest {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-family: system-ui, sans-serif;
-  color: #fff;
-  background: #1a1d1a;
-}
-
-/* Nav at banner na may parehong farm photo ng homepage */
-.market-banner {
+  padding: 0 16px 64px;
+  box-sizing: border-box;
+  color: #1f2a1a;
+  font-family: var(--font-ui, "Inter", system-ui, sans-serif);
   background:
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-    url('/hero-farm.jpg') center 35% / cover no-repeat,
-    linear-gradient(135deg, #4f7d2c, #a7c957);
-  padding-bottom: 50px;
+    radial-gradient(900px 500px at 85% -10%, rgba(155, 211, 107, 0.12), transparent 60%),
+    linear-gradient(180deg, #1b2e15 0%, #0f1c0b 100%);
 }
 
-.market-hero-text {
-  text-align: center;
-  padding: 30px 20px 0;
+/* Espasyo sa ilalim ng fixed header ng landing */
+.mp-guest .mp-page {
+  padding-top: 120px;
 }
 
-.market-hero-text h1 {
-  font-size: 2.8rem;
-  margin: 0 0 12px;
-  line-height: 1.15;
-}
-
-.market-hero-text h1 span {
-  font-weight: 400;
-}
-
-.market-hero-text > p {
-  margin: 0 auto 28px;
-  max-width: 600px;
-  opacity: 0.95;
-}
-
-.search-bar {
-  max-width: 640px;
-  margin: 0 auto 16px;
-}
-
-.search-bar input,
-.filters select,
-.filters button {
-  font-family: inherit;
-}
-
-.search-bar input,
-.filters select {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-  border-radius: 6px;
-  padding: 12px 16px;
-  font-size: 1rem;
-  outline: none;
-}
-
-.search-bar input {
-  width: 100%;
+/* ===== PAGE ===== */
+.mp-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #1f2a1a;
+  font-family: var(--font-ui, "Inter", system-ui, sans-serif);
   box-sizing: border-box;
 }
 
-.search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+.mp-guest .mp-count,
+.mp-guest .mp-muted {
+  color: rgba(241, 245, 236, 0.66);
 }
 
-.filters {
+.mp-guest .mp-error {
+  color: #f08c8c;
+}
+
+.mp-muted {
+  color: #6b7568;
+}
+
+.mp-error {
+  color: #c0392b;
+}
+
+/* ===== HERO ===== */
+.mp-hero {
+  --mp-accent: #9bd36b;
+  --mp-accent-soft: rgba(155, 211, 107, 0.18);
+  --mp-line: rgba(255, 255, 255, 0.1);
+  --mp-text: #f1f5ec;
+  --mp-muted: rgba(241, 245, 236, 0.7);
+
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 52px 32px 40px;
+  margin-bottom: 32px;
+  border: 1px solid var(--mp-line);
+  border-radius: 24px;
+  color: var(--mp-text);
+  background:
+    radial-gradient(420px 220px at 15% 0%, rgba(155, 211, 107, 0.2), transparent 70%),
+    linear-gradient(160deg, #26421e 0%, #152710 100%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.mp-hero h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--mp-text);
+}
+
+.mp-hero h1 strong {
+  font-weight: 700;
+  color: var(--mp-accent);
+}
+
+.mp-hero p {
+  margin: 12px 0 28px;
+  font-size: 1rem;
+  color: var(--mp-muted);
+}
+
+/* ===== SEARCH & FILTERS ===== */
+.mp-search {
+  display: block;
+  width: min(680px, 100%);
+  margin: 0 auto;
+  padding: 16px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(8, 18, 6, 0.45);
+  color: var(--mp-text);
+  font: inherit;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mp-search::placeholder {
+  color: rgba(241, 245, 236, 0.45);
+}
+
+.mp-search:focus {
+  border-color: var(--mp-accent);
+  box-shadow: 0 0 0 4px var(--mp-accent-soft);
+}
+
+.mp-filters {
   display: flex;
-  gap: 12px;
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-.filters select option {
+.mp-filters select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 170px;
+  padding: 10px 40px 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background-color: rgba(8, 18, 6, 0.45);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%239bd36b' stroke-width='2'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  color: var(--mp-text);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.mp-filters select:focus {
+  border-color: var(--mp-accent);
+}
+
+.mp-filters select option {
   color: #111;
 }
 
-.filters .btn-outline {
-  background: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #fff;
-  padding: 12px 22px;
+/* ===== RESULTS ===== */
+.mp-body {
+  padding: 0 4px;
 }
 
-.market-content {
-  flex: 1;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 30px 40px 40px;
-  box-sizing: border-box;
+.mp-count {
+  margin: 0 0 18px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5b6657;
 }
 
-.market-status {
-  text-align: center;
-  opacity: 0.9;
-}
-
-.market-status.error {
-  color: #ffb4a8;
-}
-
-.market-count {
-  opacity: 0.8;
-  font-size: 0.95rem;
-  margin: 0 0 16px;
-}
-
-.product-grid {
+.mp-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 22px;
 }
 
-/* Glass card gaya ng homepage */
-.product-card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  overflow: hidden;
+/* ===== CARDS (light surface, dark text, sa guest man o buyer) ===== */
+.mp-card {
   display: flex;
   flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #dfe5d6;
+  border-radius: 18px;
+  background: #fbfcf8;
+  color: #1f2a1a;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.product-img {
+.mp-card:hover {
+  transform: translateY(-4px);
+  border-color: #7aa650;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+.mp-open {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  cursor: pointer;
+  outline: none;
+}
+
+.mp-open:focus-visible {
+  box-shadow: inset 0 0 0 2px #7aa650;
+}
+
+.mp-img {
   height: 170px;
-  background: linear-gradient(135deg, #3a5a2a, #7ea552);
-  background-size: cover;
-  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(155, 211, 107, 0.55), transparent 55%),
+    linear-gradient(135deg, #2f5424 0%, #5e8f3a 100%);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.product-body {
-  padding: 18px;
+.mp-info {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1;
+  padding: 16px 18px 6px;
 }
 
-.product-category {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #a7c957;
+.mp-cat {
+  align-self: flex-start;
+}
+
+.mp-info h3 {
+  margin: 4px 0 0;
+  font-size: 1.1rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #1f2a1a;
 }
 
-.product-body h3 {
+.mp-meta {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 0.85rem;
+  color: #5b6657;
 }
 
-.product-farmer {
-  margin: 0;
-  opacity: 0.85;
-  font-size: 0.9rem;
-}
-
-/* Price at buttons nakadikit sa ilalim ng card para pantay */
-.product-footer {
-  margin-top: auto;
-  padding-top: 10px;
-}
-
-.product-price {
-  font-size: 1.25rem;
+.mp-price {
+  margin: 8px 0 0;
+  font-size: 1.3rem;
   font-weight: 700;
+  color: #2f5424;
 }
 
-.product-price span {
-  font-size: 0.9rem;
+.mp-price span {
+  font-size: 0.82rem;
   font-weight: 400;
-  opacity: 0.85;
+  color: #6b7568;
 }
 
-.product-meta {
-  margin-top: 12px;
+/* Price comparison line sa card */
+.mp-compare {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.mp-compare .mp-muted {
+  font-size: 0.8rem;
+}
+
+.mp-foot {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  margin-top: auto;
+  padding: 14px 18px 18px;
+  border-top: 1px solid #e4e9dc;
 }
 
-.stock {
+.mp-btn {
+  padding: 9px 16px;
+  border-radius: 999px;
   font-size: 0.85rem;
-  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-.stock.in {
-  color: #a7f0b5;
-}
-
-.stock.out {
-  color: #ffb4a8;
-}
-
-.btn-small {
-  padding: 8px 14px;
-  font-size: 0.9rem;
-}
-
+/* ===== RESPONSIVE ===== */
 @media (max-width: 700px) {
-  .market-hero-text h1 {
-    font-size: 2.1rem;
+  .mp-guest {
+    padding: 0 16px 48px;
   }
-  .market-content {
-    padding: 24px 20px 30px;
+
+  .mp-guest .mp-page {
+    padding-top: 104px;
   }
-  .filters select,
-  .filters .btn-outline {
+
+  .mp-hero {
+    padding: 36px 20px 28px;
+    border-radius: 20px;
+  }
+
+  .mp-search {
+    padding: 14px 18px;
+  }
+
+  .mp-filters select {
     flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  .mp-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-card,
+  .mp-search,
+  .mp-filters select {
+    transition: none;
+  }
+
+  .mp-card:hover {
+    transform: none;
   }
 }
