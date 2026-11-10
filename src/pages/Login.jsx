@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { prefetch } from '../dataCache';
 import './Landing.css';
 import './Login.css';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
 
 const ICON_PROPS = {
   width: 18,
@@ -51,13 +54,63 @@ const ICONS = {
   ),
 };
 
+/** Ikinakarga ang Google Identity Services script nang isang beses lang. */
+function loadGoogleScript() {
+  return new Promise((resolve, reject) => {
+    if (window.google?.accounts?.id) {
+      resolve();
+      return;
+    }
+
+    const existing = document.querySelector(`script[src="${GSI_SCRIPT_SRC}"]`);
+    if (existing) {
+      existing.addEventListener('load', () => resolve());
+      existing.addEventListener('error', () => reject(new Error('Google script failed')));
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = GSI_SCRIPT_SRC;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Google script failed'));
+    document.head.appendChild(script);
+  });
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [googleError, setGoogleError] = useState('');
   const [loading, setLoading] = useState(false);
+  const googleBtnRef = useRef(null);
+
+  /** Pagkatapos ng matagumpay na login (email/password o Google), i-save ang session at pumunta sa dashboard. */
+  function finishLogin(data) {
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    if (data.user?.role === 'buyer') {
+      prefetch([
+        ['buyer:products', '/products'],
+        ['buyer:orders', '/orders'],
+        ['profile', '/profile'],
+      ]);
+      navigate('/buyer/dashboard');
+    } else {
+      prefetch([
+        ['farmer:dashboard', '/farmer/dashboard'],
+        ['farmer:products', '/farmer/products'],
+        ['farmer:orders', '/farmer/orders'],
+        ['profile', '/profile'],
+      ]);
+      navigate('/dashboard');
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -66,26 +119,7 @@ export default function Login() {
 
     try {
       const res = await api.post('/login', { email, password });
-
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-
-      if (res.data.user?.role === 'buyer') {
-        prefetch([
-          ['buyer:products', '/products'],
-          ['buyer:orders', '/orders'],
-          ['profile', '/profile'],
-        ]);
-                navigate('/buyer/dashboard');
-      } else {
-        prefetch([
-          ['farmer:dashboard', '/farmer/dashboard'],
-          ['farmer:products', '/farmer/products'],
-          ['farmer:orders', '/farmer/orders'],
-          ['profile', '/profile'],
-        ]);
-        navigate('/dashboard');
-      }
+      finishLogin(res.data);
     } catch (err) {
       setError(
         err.response?.data?.error ||
@@ -96,6 +130,59 @@ export default function Login() {
       setLoading(false);
     }
   }
+
+  /** Tinatawag ng Google button pagkatapos pumili ng Gmail account. */
+  async function handleGoogleCredential(response) {
+    setError('');
+    setGoogleError('');
+    setLoading(true);
+
+    try {
+      const res = await api.post('/auth/google', { credential: response.credential });
+      finishLogin(res.data);
+    } catch (err) {
+      setGoogleError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Hindi natapos ang pag-sign in gamit ang Google.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return;
+
+    let cancelled = false;
+
+    loadGoogleScript()
+      .then(() => {
+        if (cancelled || !googleBtnRef.current || !window.google?.accounts?.id) return;
+
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+        });
+
+        window.google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          width: 360,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setGoogleError('Hindi ma-load ang Google sign-in. Subukang muli.');
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="landing login-page">
@@ -182,6 +269,32 @@ export default function Login() {
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
+
+            {GOOGLE_CLIENT_ID && (
+              <>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    margin: '18px 0',
+                    color: '#888',
+                    fontSize: 13,
+                  }}
+                >
+                  <span style={{ flex: 1, height: 1, background: '#ddd' }} />
+                  o
+                  <span style={{ flex: 1, height: 1, background: '#ddd' }} />
+                </div>
+
+                <div
+                  ref={googleBtnRef}
+                  style={{ display: 'flex', justifyContent: 'center', minHeight: 44 }}
+                />
+
+                {googleError && <div className="login-error" role="alert">{googleError}</div>}
+              </>
+            )}
 
             <p className="login-foot">
               Don't have an account yet? <Link to="/register">Create an Account</Link>
