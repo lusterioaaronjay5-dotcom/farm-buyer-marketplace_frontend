@@ -87,14 +87,21 @@ export default function Login() {
   const [error, setError] = useState('');
   const [googleError, setGoogleError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Kapag bagong Gmail, dito itinatago ang credential habang pumipili ang user ng role
+  const [pendingCredential, setPendingCredential] = useState(null);
+  const [pendingName, setPendingName] = useState('');
   const googleBtnRef = useRef(null);
 
-  /** Pagkatapos ng matagumpay na login (email/password o Google), i-save ang session at pumunta sa dashboard. */
+  /** Pagkatapos ng matagumpay na login, i-save ang session at pumunta sa tamang page ayon sa role. */
   function finishLogin(data) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
 
-    if (data.user?.role === 'buyer') {
+    const role = data.user?.role;
+
+    if (role === 'admin') {
+      navigate('/admin');
+    } else if (role === 'buyer') {
       prefetch([
         ['buyer:products', '/products'],
         ['buyer:orders', '/orders'],
@@ -139,12 +146,42 @@ export default function Login() {
 
     try {
       const res = await api.post('/auth/google', { credential: response.credential });
-      finishLogin(res.data);
+
+      if (res.data.needs_role) {
+        // Bagong account: ipakita muna ang pagpipilian ng role
+        setPendingName(res.data.name || '');
+        setPendingCredential(response.credential);
+      } else {
+        finishLogin(res.data);
+      }
     } catch (err) {
       setGoogleError(
         err.response?.data?.error ||
           err.response?.data?.message ||
           'Hindi natapos ang pag-sign in gamit ang Google.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /** Tinatawag pagkapili ng Buyer o Farmer para sa bagong Gmail account. */
+  async function chooseGoogleRole(role) {
+    setGoogleError('');
+    setLoading(true);
+
+    try {
+      const res = await api.post('/auth/google', {
+        credential: pendingCredential,
+        role,
+      });
+      setPendingCredential(null);
+      finishLogin(res.data);
+    } catch (err) {
+      setGoogleError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Hindi natapos ang paggawa ng account.'
       );
     } finally {
       setLoading(false);
@@ -188,10 +225,6 @@ export default function Login() {
     <div className="landing login-page">
       <header className="lp-nav">
         <div className="lp-wrap lp-nav-inner">
-          <Link to="/" className="lp-logo">
-            <span className="lp-logo-mark">{ICONS.leaf}</span>
-            <span>FarmConnect</span>
-          </Link>
           <nav className="lp-links">
             <Link to="/">Home</Link>
             <Link to="/about">About Us</Link>
@@ -289,8 +322,64 @@ export default function Login() {
 
                 <div
                   ref={googleBtnRef}
-                  style={{ display: 'flex', justifyContent: 'center', minHeight: 44 }}
+                  style={{
+                    display: pendingCredential ? 'none' : 'flex',
+                    justifyContent: 'center',
+                    minHeight: 44,
+                  }}
                 />
+
+                {pendingCredential && (
+                  <div
+                    style={{
+                      padding: 16,
+                      borderRadius: 12,
+                      background: 'rgba(255,255,255,0.08)',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <p style={{ margin: '0 0 12px', fontWeight: 600 }}>
+                      Welcome{pendingName ? `, ${pendingName}` : ''}! Ano ang account mo?
+                    </p>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <button
+                        type="button"
+                        className="lp-btn lp-btn-primary"
+                        style={{ flex: 1 }}
+                        disabled={loading}
+                        onClick={() => chooseGoogleRole('buyer')}
+                      >
+                        Buyer
+                      </button>
+                      <button
+                        type="button"
+                        className="lp-btn lp-btn-primary"
+                        style={{ flex: 1 }}
+                        disabled={loading}
+                        onClick={() => chooseGoogleRole('farmer')}
+                      >
+                        Farmer
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPendingCredential(null);
+                        setGoogleError('');
+                      }}
+                      style={{
+                        marginTop: 10,
+                        background: 'none',
+                        border: 'none',
+                        color: '#aaa',
+                        cursor: 'pointer',
+                        fontSize: 13,
+                      }}
+                    >
+                      Kanselahin
+                    </button>
+                  </div>
+                )}
 
                 {googleError && <div className="login-error" role="alert">{googleError}</div>}
               </>

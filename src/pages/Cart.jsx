@@ -20,13 +20,13 @@ export default function Cart() {
   const [items, setItems] = useState(getCart());
   const [address, setAddress] = useState('');
   const [pin, setPin] = useState(null);
+  const [method, setMethod] = useState('delivery');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(null);
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const deliveryFee = 0;
-  const total = subtotal + deliveryFee;
+  const isPickup = method === 'pickup';
 
   function refresh() {
     setItems(getCart());
@@ -64,7 +64,8 @@ export default function Cart() {
       setError('Ilagay ang delivery address.');
       return;
     }
-    if (!pin) {
+    // Kailangan ang pin para makwenta ang delivery fee
+    if (!isPickup && !pin) {
       setError('I-pin muna ang lokasyon ng delivery sa mapa.');
       return;
     }
@@ -77,9 +78,10 @@ export default function Cart() {
           quantity: i.quantity,
         })),
         delivery_address: address.trim(),
+        delivery_method: method,
         notes: '',
-        latitude: pin.lat,
-        longitude: pin.lng,
+        latitude: pin ? pin.lat : null,
+        longitude: pin ? pin.lng : null,
       });
 
       clearCart();
@@ -115,7 +117,17 @@ export default function Cart() {
             <div className="cart-list">
               {items.map((item) => (
                 <div className="cart-row" key={item.product_id}>
-                  <div className="cart-thumb">IMAGE</div>
+                  <div className="cart-thumb">
+                    {item.image_path ? (
+                      <img
+                        src={item.image_path}
+                        alt={item.product_name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
+                    ) : (
+                      'IMAGE'
+                    )}
+                  </div>
 
                   <div className="cart-info">
                     <strong>{item.product_name}</strong>
@@ -157,49 +169,79 @@ export default function Cart() {
               <span>₱{subtotal.toFixed(2)}</span>
             </div>
             <div className="summary-row">
-              <span>Delivery fee (if applicable)</span>
-              <span>₱{deliveryFee.toFixed(2)}</span>
+              <span>Delivery fee</span>
+              <span>
+                {isPickup ? '₱0.00 (pickup)' : 'Kukwentahin sa checkout'}
+              </span>
             </div>
 
             <div className="summary-total">
               <span>Total Amount</span>
-              <strong>₱{total.toFixed(2)}</strong>
+              <strong>₱{subtotal.toFixed(2)}{isPickup ? '' : ' +'}</strong>
+            </div>
+
+            <p className="summary-label">Paraan ng pagkuha</p>
+            <div style={{ display: 'flex', gap: 18, margin: '0 18px 12px', fontSize: 14 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name="delivery_method"
+                  value="delivery"
+                  checked={method === 'delivery'}
+                  onChange={() => setMethod('delivery')}
+                />
+                Delivery
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name="delivery_method"
+                  value="pickup"
+                  checked={method === 'pickup'}
+                  onChange={() => setMethod('pickup')}
+                />
+                Pickup
+              </label>
             </div>
 
             <label className="summary-label" htmlFor="address">
-              Delivery address
+              {isPickup ? 'Address ng pickup o contact' : 'Delivery address'}
             </label>
             <input
               id="address"
               className="summary-input"
-              placeholder="Enter delivery address"
+              placeholder="Enter address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
 
-            <p className="summary-label">Pin sa mapa (required)</p>
-            <LocationPicker value={pin} onChange={setPin} />
+            {!isPickup && (
+              <>
+                <p className="summary-label">Pin sa mapa (required)</p>
+                <LocationPicker value={pin} onChange={setPin} />
 
-            <div className="pin-row">
-              {pin ? (
-                <>
-                  <span>
-                    Naka-pin: {pin.lat.toFixed(5)}, {pin.lng.toFixed(5)}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn btn-ghost pin-clear"
-                    onClick={() => setPin(null)}
-                  >
-                    Alisin ang pin
-                  </button>
-                </>
-              ) : (
-                <span className="pin-none">
-                  Mag-pin muna sa mapa bago mag-checkout.
-                </span>
-              )}
-            </div>
+                <div className="pin-row">
+                  {pin ? (
+                    <>
+                      <span>
+                        Naka-pin: {pin.lat.toFixed(5)}, {pin.lng.toFixed(5)}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-ghost pin-clear"
+                        onClick={() => setPin(null)}
+                      >
+                        Alisin ang pin
+                      </button>
+                    </>
+                  ) : (
+                    <span className="pin-none">
+                      Mag-pin muna sa mapa bago mag-checkout.
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
 
             <p className="payment-method">Payment method: E-wallet (simulated)</p>
 
@@ -222,8 +264,11 @@ export default function Cart() {
 
         {success && (
           <p className="status-ok">
-            Na-place na ang order #{success.order_id}. Total: ₱
-            {Number(success.total_amount).toFixed(2)}. Naghihintay ng bayad.
+            Na-place na ang order #{success.order_id}.{' '}
+            {success.delivery_method === 'pickup' ? 'Pickup' : 'Delivery'}
+            {success.delivery_method !== 'pickup' &&
+              ` · Delivery fee: ₱${Number(success.delivery_fee).toFixed(2)}`}
+            {' · '}Total: ₱{Number(success.total_amount).toFixed(2)}. Naghihintay ng bayad.
           </p>
         )}
 

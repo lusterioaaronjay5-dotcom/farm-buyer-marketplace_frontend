@@ -47,6 +47,16 @@ const ICONS = {
       <path d="M9 4V2h6v2M9 12h6M9 16h4" />
     </svg>
   ),
+  stock: (
+    <svg {...SVG}>
+      <path d="M4 7h16v4H4zM4 13h16v4H4z" />
+    </svg>
+  ),
+  report: (
+    <svg {...SVG}>
+      <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+    </svg>
+  ),
   messages: (
     <svg {...SVG}>
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -56,6 +66,19 @@ const ICONS = {
     <svg {...SVG}>
       <circle cx="12" cy="8" r="4" />
       <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+    </svg>
+  ),
+  silhouette: (
+    <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4 4-6 8-6s8 2 8 6z" />
+    </svg>
+  ),
+  sprout: (
+    <svg {...SVG} width={20} height={20}>
+      <path d="M12 21v-9" />
+      <path d="M12 12c0-4 3-7 7-7 0 4-3 7-7 7Z" />
+      <path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5Z" />
     </svg>
   ),
   logout: (
@@ -70,21 +93,46 @@ const ICONS = {
       <path d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   ),
-  leaf: (
-    <svg {...SVG}>
-      <path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" />
-      <path d="M5 19l6-6" />
-    </svg>
-  ),
 };
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
   { to: '/farmer/products', label: 'My Products', icon: 'products' },
   { to: '/farmer/orders', label: 'Received Orders', icon: 'orders' },
+  { to: '/farmer/stock', label: 'My Stock', icon: 'stock' },
+  { to: '/reports', label: 'Reports', icon: 'report' },
   { to: '/farmer/messages', label: 'Messages', icon: 'messages', popup: true },
   { to: '/profile', label: 'My Profile', icon: 'profile' },
 ];
+
+const C = {
+  primary: '#174D36',
+  secondary: '#216642',
+  sage: '#EAF3EC',
+  bg: '#F7F9F6',
+  card: '#FFFFFF',
+  text: '#1F2937',
+  muted: '#64748B',
+  border: '#E5EAE6',
+};
+
+function navStyle(active) {
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '10px 12px',
+    borderRadius: 10,
+    textDecoration: 'none',
+    fontSize: 14,
+    fontWeight: active ? 600 : 500,
+    color: active ? C.primary : C.muted,
+    background: active ? C.sage : 'transparent',
+    boxShadow: active ? `inset 3px 0 0 ${C.primary}` : 'none',
+    transition: 'background 0.2s ease, color 0.2s ease',
+    cursor: 'pointer',
+  };
+}
 
 function getStoredUser() {
   try {
@@ -97,7 +145,6 @@ function getStoredUser() {
 export default function FarmerLayout({ children }) {
   const navigate = useNavigate();
   const [navOpen, setNavOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const closeMessages = useCallback(() => setMessagesOpen(false), []);
   // Magre-refresh ang count kapag nagsara ang popup, para mawala ang badge kung nabasa na
@@ -105,13 +152,7 @@ export default function FarmerLayout({ children }) {
 
   const user = getStoredUser();
   const name = user?.full_name || 'Farmer';
-  const initials = name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
+  const picture = user?.profile_picture || '';
 
   function handleLogout() {
     localStorage.removeItem('token');
@@ -121,28 +162,71 @@ export default function FarmerLayout({ children }) {
 
   return (
     <div className={`farmer-shell ${navOpen ? 'nav-open' : ''}`}>
-      <aside className="farmer-sidebar">
-        <div className="fs-brand">
-          <span className="fs-logo">{ICONS.leaf}</span>
-          <span>FarmConnect</span>
+      <aside
+        className="farmer-sidebar"
+        style={{
+          width: 256,
+          maxWidth: '85vw',
+          minHeight: '100vh',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          background: C.card,
+          borderRight: `1px solid ${C.border}`,
+          padding: '22px 16px',
+        }}
+      >
+        {/* Branding */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 6px 8px' }}>
+          <span
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              background: C.primary,
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            {ICONS.sprout}
+          </span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Farmer Portal</span>
         </div>
 
-        <p className="fs-section">Menu</p>
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: C.muted,
+            padding: '0 12px',
+            margin: '22px 0 8px',
+          }}
+        >
+          Menu
+        </p>
 
-        <nav className="fs-nav">
+        <nav className="fs-nav" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {NAV_ITEMS.map((item) =>
             item.popup ? (
               <a
                 key={item.to}
                 href="#messages"
                 className="fs-link"
+                style={navStyle(false)}
                 onClick={(e) => {
                   e.preventDefault();
                   setNavOpen(false);
                   setMessagesOpen(true);
                 }}
               >
-                <span className="fs-icon">{ICONS[item.icon]}</span>
+                <span style={{ display: 'flex', width: 18, height: 18, flexShrink: 0 }}>
+                  {ICONS[item.icon]}
+                </span>
                 <span>{item.label}</span>
                 {unread > 0 && (
                   <span className="nav-count">{unread > 99 ? '99+' : unread}</span>
@@ -152,20 +236,107 @@ export default function FarmerLayout({ children }) {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={({ isActive }) => `fs-link ${isActive ? 'is-active' : ''}`}
+                className="fs-link"
+                style={({ isActive }) => navStyle(isActive)}
                 onClick={() => setNavOpen(false)}
               >
-                <span className="fs-icon">{ICONS[item.icon]}</span>
+                <span style={{ display: 'flex', width: 18, height: 18, flexShrink: 0 }}>
+                  {ICONS[item.icon]}
+                </span>
                 <span>{item.label}</span>
               </NavLink>
             )
           )}
         </nav>
 
-        <button type="button" className="fs-logout" onClick={handleLogout}>
-          <span className="fs-icon">{ICONS.logout}</span>
-          <span>Logout</span>
-        </button>
+        {/* Profile section sa ibaba */}
+        <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+          <Link
+            to="/profile"
+            onClick={() => setNavOpen(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: 12,
+              borderRadius: 12,
+              background: C.bg,
+              border: `1px solid ${C.border}`,
+              textDecoration: 'none',
+              color: C.text,
+              minWidth: 0,
+            }}
+          >
+            {picture ? (
+              <img
+                src={picture}
+                alt={name}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  flexShrink: 0,
+                }}
+              />
+            ) : (
+              <span
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  background: C.primary,
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                {ICONS.silhouette}
+              </span>
+            )}
+            <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: C.text,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {name}
+              </span>
+              <span style={{ fontSize: 12, color: C.muted }}>Farmer</span>
+            </span>
+          </Link>
+
+          <button
+            type="button"
+            className="fs-logout"
+            onClick={handleLogout}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              marginTop: 10,
+              padding: '10px 12px',
+              borderRadius: 10,
+              border: `1px solid ${C.border}`,
+              background: C.card,
+              color: C.text,
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            <span style={{ display: 'flex', width: 18, height: 18 }}>{ICONS.logout}</span>
+            <span>Logout</span>
+          </button>
+        </div>
       </aside>
 
       {navOpen && <div className="fs-backdrop" onClick={() => setNavOpen(false)} />}
@@ -182,31 +353,6 @@ export default function FarmerLayout({ children }) {
               {ICONS.menu}
             </button>
             <span className="fs-crumb">Farmer Portal</span>
-          </div>
-
-          <div className="fs-user">
-            <button
-              type="button"
-              className="fs-user-btn"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-expanded={menuOpen}
-            >
-              <span className="fs-avatar">{initials || 'F'}</span>
-              <span className="fs-name">{name}</span>
-            </button>
-
-            {menuOpen && (
-              <div className="fs-dropdown">
-                <Link to="/profile" onClick={() => setMenuOpen(false)}>
-                  <span className="fs-icon">{ICONS.profile}</span>
-                  <span>My Profile</span>
-                </Link>
-                <button type="button" onClick={handleLogout}>
-                  <span className="fs-icon">{ICONS.logout}</span>
-                  <span>Logout</span>
-                </button>
-              </div>
-            )}
           </div>
         </header>
 

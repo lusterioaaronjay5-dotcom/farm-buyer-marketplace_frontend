@@ -127,13 +127,6 @@ function GuestLanding() {
     <div className="landing">
       <header className="lp-nav">
         <div className="lp-wrap lp-nav-inner">
-          <Link to="/" className="lp-logo">
-            <span className="lp-logo-mark">
-              <Icon name="leaf" />
-            </span>
-            FarmConnect
-          </Link>
-
           <nav className="lp-links" aria-label="Main">
             <Link to="/" className="active">Home</Link>
             <Link to="/about">About Us</Link>

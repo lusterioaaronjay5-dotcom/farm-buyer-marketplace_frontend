@@ -149,7 +149,17 @@ export default function Marketplace() {
                   }
                 }}
               >
-                <div className="mp-img">No image</div>
+                <div className="mp-img">
+                  {p.image_path ? (
+                    <img
+                      src={p.image_path}
+                      alt={p.product_name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  ) : (
+                    'No image'
+                  )}
+                </div>
 
                 <div className="mp-info">
                   <span className="badge badge-accent mp-cat">{p.category}</span>

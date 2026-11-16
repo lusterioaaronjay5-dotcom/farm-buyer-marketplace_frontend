@@ -14,6 +14,9 @@ import BuyerDashboard from './pages/BuyerDashboard';
 import About from './pages/About';
 import Service from './pages/Service';
 import Inbox from './pages/Inbox';
+import AdminPage from './pages/AdminPage';
+import ReportPage from './pages/ReportPage';
+import StockPage from './pages/StockPage';
 
 function App() {
   return (
@@ -26,6 +29,7 @@ function App() {
         <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
         <Route path="/farmer/products" element={<FarmerProducts />} />
         <Route path="/farmer/orders" element={<ReceivedOrders />} />
+        <Route path="/farmer/stock" element={<StockPage />} />
         <Route path="/product" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/my-orders" element={<MyOrders />} />
@@ -33,6 +37,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/about" element={<About />} />
         <Route path="/service" element={<Service />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/reports" element={<ReportPage />} />
       </Routes>
     </BrowserRouter>
   );

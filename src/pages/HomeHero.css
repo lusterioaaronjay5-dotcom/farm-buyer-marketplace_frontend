@@ -137,3 +137,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Hero ng guest home: punong-puno ang screen bago ang About section */
+main > section.lp-hero {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+main > section.lp-hero > .lp-wrap {
+  width: 100%;
+}

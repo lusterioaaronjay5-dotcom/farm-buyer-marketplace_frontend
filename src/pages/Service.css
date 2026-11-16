@@ -388,3 +388,12 @@
     padding-bottom: 72px;
   }
 }
+
+/* ========== HERO: punong-puno ang screen bago ang susunod na section ========== */
+.services .sv-hero {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

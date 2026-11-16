@@ -152,13 +152,6 @@ export default function About() {
     <div className="landing about">
       <header className="lp-nav">
         <div className="lp-wrap lp-nav-inner">
-          <Link to="/" className="lp-logo">
-            <span className="lp-logo-mark">
-              <Icon name="leaf" />
-            </span>
-            FarmConnect
-          </Link>
-
           <nav className="lp-links" aria-label="Main">
             <Link to="/">Home</Link>
             <Link to="/about" className="active">About Us</Link>

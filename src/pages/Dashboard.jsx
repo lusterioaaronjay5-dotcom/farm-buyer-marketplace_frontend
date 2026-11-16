@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import FarmerLayout from '../components/FarmerLayout';
 import SalesSummary from '../components/SalesSummary';
-import StockPie from '../components/StockPie';
 import useApiData from '../useApiData';
 import './Dashboard.css';
 import './DashboardMotion.css';
@@ -134,10 +133,161 @@ const ICONS = {
   ),
 };
 
+// Popup na nagpapakita lang ng mga produkto ng isang order
+function OrderItemsModal({ order, loading, onClose }) {
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === 'Escape') onClose();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const muted = { margin: 0, fontSize: 13, color: 'var(--bd-muted)' };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 300,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+        background: 'rgba(15, 28, 19, 0.5)',
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: 480,
+          maxHeight: '80vh',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          background: '#ffffff',
+          borderRadius: 18,
+          boxShadow: '0 30px 80px rgba(0, 0, 0, 0.25)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 12,
+            padding: '18px 22px',
+            borderBottom: '1px solid var(--bd-line)',
+          }}
+        >
+          <div>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: 'var(--bd-muted)',
+              }}
+            >
+              Mga Produkto
+            </p>
+            <h2 style={{ margin: '4px 0 0', fontSize: 18, fontWeight: 700, color: 'var(--bd-ink)' }}>
+              {order ? `Order #${order.order_id}` : 'Order'}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Isara"
+            style={{
+              width: 34,
+              height: 34,
+              flex: '0 0 34px',
+              border: 'none',
+              borderRadius: '50%',
+              background: 'var(--bd-soft)',
+              color: 'var(--bd-forest)',
+              fontSize: 14,
+              cursor: 'pointer',
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div style={{ padding: '16px 22px 20px', overflowY: 'auto' }}>
+          {!order ? (
+            <p style={muted}>{loading ? 'Naglo-load...' : 'Hindi makita ang order.'}</p>
+          ) : (
+            <>
+              <p style={{ ...muted, marginBottom: 12 }}>{formatDate(order.created_at)}</p>
+
+              {(order.items || []).map((item, i) => (
+                <div
+                  key={item.product_id ?? i}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '12px 0',
+                    borderBottom: '1px solid #eef2ea',
+                    fontSize: 14,
+                    color: 'var(--bd-ink)',
+                  }}
+                >
+                  <span>
+                    {item.product_name}{' '}
+                    <small style={{ color: 'var(--bd-muted)' }}>
+                      × {item.quantity} {item.unit}
+                    </small>
+                  </span>
+                  <strong style={{ whiteSpace: 'nowrap' }}>{peso(item.line_total)}</strong>
+                </div>
+              ))}
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingTop: 14,
+                  fontSize: 14,
+                  color: 'var(--bd-ink)',
+                }}
+              >
+                <span>Kabuuan</span>
+                <strong style={{ color: 'var(--bd-forest)', fontSize: 16 }}>
+                  {peso(order.subtotal)}
+                </strong>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FarmerDashboard({ user }) {
   const { data, loading, error } = useApiData('farmer:dashboard', '/farmer/dashboard');
+  // Parehong cache key ng Received Orders page, para sa mga produkto ng bawat order
+  const { data: ordersData, loading: ordersLoading } = useApiData('farmer:orders', '/farmer/orders');
+  const [openOrderId, setOpenOrderId] = useState(null);
+  const closeOrder = useCallback(() => setOpenOrderId(null), []);
 
   const firstName = (user.full_name || '').split(' ')[0] || 'Farmer';
+
+  const orders = ordersData?.orders || [];
+  const openOrder =
+    openOrderId !== null ? orders.find((o) => o.order_id === openOrderId) || null : null;
 
   const stats = data
     ? [
@@ -221,45 +371,36 @@ function FarmerDashboard({ user }) {
                             <span className="fd-amount">{peso(o.subtotal)}</span>
                           </div>
 
-                          <Link to="/farmer/orders" className="fd-view">View details</Link>
+                          <button
+                            type="button"
+                            className="fd-view"
+                            onClick={() => setOpenOrderId(o.order_id)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              padding: 0,
+                              cursor: 'pointer',
+                              font: 'inherit',
+                            }}
+                          >
+                            View details
+                          </button>
                         </div>
                       );
                     })
                   )}
                 </section>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <section className="card fd-panel fd-rise" style={{ animationDelay: '330ms' }}>
-                    <div className="fd-panel-head">
-                      <h2>Ubos na ang Stock</h2>
-                      <Link to="/farmer/products">Pamahalaan</Link>
-                    </div>
-
-                    {data.low_stock.length === 0 ? (
-                      <p className="fd-empty">Maayos pa ang stock ng lahat ng produkto.</p>
-                    ) : (
-                      data.low_stock.map((p) => (
-                        <Link to="/farmer/products" className="fd-low" key={p.product_id}>
-                          <strong>{p.product_name}</strong>
-                          <span className="fd-stock">
-                            {p.quantity_available} {p.unit}
-                          </span>
-                        </Link>
-                      ))
-                    )}
-                  </section>
-
-                  <section className="card fd-panel fd-rise" style={{ animationDelay: '410ms' }}>
-                    <div className="fd-panel-head">
-                      <h2>Stock ng Produkto</h2>
-                      <Link to="/farmer/products">Pamahalaan</Link>
-                    </div>
-                    <StockPie items={data.stock_breakdown || []} />
-                  </section>
-                </div>
               </div>
             </>
           )
+        )}
+
+        {openOrderId !== null && (
+          <OrderItemsModal
+            order={openOrder}
+            loading={ordersLoading}
+            onClose={closeOrder}
+          />
         )}
       </div>
     </FarmerLayout>

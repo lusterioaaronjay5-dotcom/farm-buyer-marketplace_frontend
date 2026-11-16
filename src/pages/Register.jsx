@@ -158,10 +158,6 @@ export default function Register() {
     <div className="landing login-page register-page">
       <header className="lp-nav">
         <div className="lp-wrap lp-nav-inner">
-          <Link to="/" className="lp-logo">
-            <span className="lp-logo-mark">{ICONS.leaf}</span>
-            <span>FarmConnect</span>
-          </Link>
           <nav className="lp-links">
             <Link to="/">Home</Link>
             <Link to="/about">About Us</Link>

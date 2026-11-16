@@ -3,9 +3,7 @@ export const CATEGORIES = [
   'Fruits',
   'Rice',
   'Root Crops',
-  'Herbs & Spices',
   'Poultry & Eggs',
-  'Others',
 ];
 
 export const LOCATIONS = [
@@ -17,6 +15,4 @@ export const LOCATIONS = [
   'Quezon',
   'Bulacan',
   'Pampanga',
-  'Nueva Ecija',
-  'Isabela',
 ];

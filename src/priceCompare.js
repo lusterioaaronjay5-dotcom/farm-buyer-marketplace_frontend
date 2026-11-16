@@ -1,13 +1,19 @@
-const MIN_OTHERS = 1; // kailangan kahit 1 ibang produkto para may ihambing
+const MIN_OTHERS = 1; // kailangan kahit 1 listing mula sa ibang farmer para may ihambing
 const CHEAPER_RATIO = 0.9; // 10% pababa sa average = mas mura
 const PRICIER_RATIO = 1.1; // 10% pataas sa average = mas mahal
 
-function groupKey(p) {
-  return `${(p.category || '').toLowerCase()}|${(p.unit || '').toLowerCase()}`;
-}
-
 function normalize(text) {
   return (text || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+// Parehong pangalan at unit lang ang pinagsasama
+function groupKey(p) {
+  return `${normalize(p.product_name)}|${normalize(p.unit)}`;
+}
+
+// Kinikilala ang farmer para hindi maikumpara ang sariling listing
+function farmerKey(p) {
+  return p.farmer_id != null ? `id:${p.farmer_id}` : `name:${normalize(p.farmer_name)}`;
 }
 
 export function buildPriceBenchmarks(products) {
@@ -18,9 +24,8 @@ export function buildPriceBenchmarks(products) {
     if (!(price > 0)) continue;
 
     const key = groupKey(p);
-    if (!groups[key]) groups[key] = { sum: 0, count: 0 };
-    groups[key].sum += price;
-    groups[key].count += 1;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push({ farmer: farmerKey(p), price });
   }
 
   return groups;
@@ -28,14 +33,18 @@ export function buildPriceBenchmarks(products) {
 
 export function comparePrice(product, benchmarks) {
   const price = Number(product.price);
-  const group = benchmarks[groupKey(product)];
+  if (!(price > 0)) return { status: 'none' };
 
-  if (!(price > 0) || !group || group.count - 1 < MIN_OTHERS) {
+  const entries = benchmarks[groupKey(product)] || [];
+  const me = farmerKey(product);
+
+  // Mga listing lang ng ibang farmer ang isasama
+  const others = entries.filter((e) => e.farmer !== me);
+  if (others.length < MIN_OTHERS) {
     return { status: 'none' };
   }
 
-  // Average ng ibang produkto, hindi kasama ang sarili
-  const avg = (group.sum - price) / (group.count - 1);
+  const avg = others.reduce((sum, e) => sum + e.price, 0) / others.length;
   const ratio = price / avg;
 
   if (ratio <= CHEAPER_RATIO) {

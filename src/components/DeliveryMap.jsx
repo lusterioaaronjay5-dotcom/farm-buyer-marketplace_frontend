@@ -1,6 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import { riderPosition } from './routeProgress';
+import {
+  deliverySeconds,
+  fetchRoadRoute,
+  positionAlongRoute,
+  progress,
+  riderPosition,
+} from './routeProgress';
 import './DeliveryMap.css';
 
 const STYLE = {
@@ -59,18 +65,51 @@ function buildDirectionsUrl(lat, lng, originAddress) {
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
+// Iguhit ang ruta sa kalsada sa mapa. Kung hindi pa handa ang style, hihintayin muna.
+function drawRouteLine(map, coords) {
+  const data = {
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: coords },
+  };
+
+  const apply = () => {
+    const existing = map.getSource('route');
+    if (existing) {
+      existing.setData(data);
+      return;
+    }
+    map.addSource('route', { type: 'geojson', data });
+    map.addLayer({
+      id: 'route-line',
+      type: 'line',
+      source: 'route',
+      paint: {
+        'line-color': '#6b46c1',
+        'line-width': 4,
+        'line-opacity': 0.8,
+      },
+    });
+  };
+
+  if (map.isStyleLoaded()) apply();
+  else map.once('load', apply);
+}
+
 export default function DeliveryMap({ lat, lng, label, status, originAddress, route }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const popupRef = useRef(null);
   const riderRef = useRef(null);
+  const [roadCoords, setRoadCoords] = useState(null);
+  const [arrived, setArrived] = useState(false);
   const meta = STATUS_META[status] || FALLBACK;
 
   // Datos ng ruta ng rider. Galing sa database, kaya Number() muna.
   const originLat = route?.originLat != null ? Number(route.originLat) : null;
   const originLng = route?.originLng != null ? Number(route.originLng) : null;
   const dispatchedAt = route?.dispatchedAt != null ? Number(route.dispatchedAt) : null;
+  const etaSeconds = route?.etaSeconds != null ? Number(route.etaSeconds) : null;
   const hasRoute =
     status === 'out_for_delivery' &&
     originLat != null &&
@@ -129,6 +168,34 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
     if (popup) popup.setDOMContent(buildPopup(label, meta));
   }, [meta, label]);
 
+  // Kunin ang ruta sa kalsada. Kapag pumalya, tuwid na linya ang gagamitin.
+  useEffect(() => {
+    if (!hasRoute) {
+      setRoadCoords(null);
+      return undefined;
+    }
+
+    let cancelled = false;
+    fetchRoadRoute(originLng, originLat, lng, lat)
+      .then((coords) => {
+        if (!cancelled) setRoadCoords(coords);
+      })
+      .catch(() => {
+        if (!cancelled) setRoadCoords(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasRoute, originLat, originLng, lat, lng]);
+
+  // Iguhit ang linya ng ruta kapag handa na ang mapa at ang ruta
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !roadCoords) return;
+    drawRouteLine(map, roadCoords);
+  }, [roadCoords, lat, lng]);
+
   // Gumagalaw na rider sa mapa habang out for delivery
   useEffect(() => {
     const map = mapRef.current;
@@ -145,13 +212,19 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
       .addTo(map);
     riderRef.current = rider;
 
-    const r = { originLat, originLng, dispatchedAt };
+    const r = { originLat, originLng, dispatchedAt, etaSeconds };
     let timer = null;
 
     function update() {
-      const pos = riderPosition(r, { lat, lng });
+      const t = progress(r);
+      const pos =
+        (roadCoords && positionAlongRoute(roadCoords, t)) ||
+        riderPosition(r, { lat, lng });
+
       rider.setLngLat([pos.lng, pos.lat]);
-      if (pos.done && timer) {
+      setArrived(t >= 1);
+
+      if (t >= 1 && timer) {
         clearInterval(timer);
         timer = null;
       }
@@ -165,10 +238,23 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
       rider.remove();
       if (riderRef.current === rider) riderRef.current = null;
     };
-  }, [hasRoute, originLat, originLng, dispatchedAt, lat, lng]);
+  }, [hasRoute, originLat, originLng, dispatchedAt, etaSeconds, lat, lng, roadCoords]);
+
+  // Linisin ang "nasa buyer na" kapag hindi na out for delivery
+  useEffect(() => {
+    if (!hasRoute) setArrived(false);
+  }, [hasRoute]);
 
   const coordsText = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
   const directionsUrl = buildDirectionsUrl(lat, lng, originAddress);
+
+  const arrivalText =
+    hasRoute && dispatchedAt != null
+      ? new Date((dispatchedAt + deliverySeconds({ etaSeconds })) * 1000).toLocaleTimeString(
+          'en-PH',
+          { hour: '2-digit', minute: '2-digit' }
+        )
+      : null;
 
   return (
     <div className="dmap-wrap">
@@ -193,6 +279,12 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
         />
         {meta.label}
       </div>
+
+      {hasRoute && (
+        <div style={{ fontSize: 13, color: '#4a5568', marginTop: 4 }}>
+          {arrived ? 'Nasa buyer na ang order' : `Tinatayang dating: ${arrivalText}`}
+        </div>
+      )}
 
       <div ref={containerRef} className="dmap-map" />
 

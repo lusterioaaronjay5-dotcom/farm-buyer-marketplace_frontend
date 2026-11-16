@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import FarmerLayout, { StatCard } from '../components/FarmerLayout';
-import { CATEGORIES, LOCATIONS } from '../constants';
+import { CATEGORIES } from '../constants';
 import useApiData from '../useApiData';
 import { invalidate } from '../dataCache';
 import './FarmerProducts.css';
 import './FarmerProductsModal.css';
+
+const UNITS = ['kg', 'bundle', 'pcs', 'tray'];
+const PAGE_SIZE = 10;
 
 const emptyForm = {
   product_name: '',
@@ -17,6 +20,7 @@ const emptyForm = {
   availability: 'available',
   location: '',
   description: '',
+  image_path: '',
 };
 
 function getStoredUser() {
@@ -30,6 +34,31 @@ function getStoredUser() {
 // Idinadagdag ang kasalukuyang value kung wala sa listahan (halimbawa lumang data)
 function withCurrent(list, value) {
   return value && !list.includes(value) ? [value, ...list] : list;
+}
+
+// Ini-resize ang larawan sa browser para maliit ang laki, at ibinabalik bilang JPEG text
+function resizeImage(file, maxSize = 600) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.8));
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Hindi mabasa ang larawan.'));
+    };
+
+    img.src = url;
+  });
 }
 
 export default function FarmerProducts() {
@@ -49,12 +78,13 @@ export default function FarmerProducts() {
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     if (!token || !user || user.role !== 'farmer') {
@@ -106,6 +136,7 @@ export default function FarmerProducts() {
       availability: p.availability,
       location: p.location || '',
       description: p.description || '',
+      image_path: p.image_path || '',
     });
     setError('');
     setShowForm(true);
@@ -120,6 +151,36 @@ export default function FarmerProducts() {
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleImageChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setError('JPG, PNG, o WEBP lang ang puwede.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Masyadong malaki ang larawan. Pumili ng mas maliit.');
+      return;
+    }
+
+    setError('');
+    setProcessing(true);
+    try {
+      const dataUrl = await resizeImage(file);
+      if (dataUrl.length > 500000) {
+        setError('Masyadong malaki pa rin ang larawan. Pumili ng mas maliit.');
+      } else {
+        setForm((f) => ({ ...f, image_path: dataUrl }));
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setProcessing(false);
+    }
   }
 
   async function handleSave(e) {
@@ -172,12 +233,12 @@ export default function FarmerProducts() {
           (v || '').toLowerCase().includes(q)
         );
       const matchCategory = !categoryFilter || p.category === categoryFilter;
-      const matchLocation =
-        !locationFilter || (p.location || '').includes(locationFilter);
 
-      return matchText && matchCategory && matchLocation;
+      return matchText && matchCategory;
     });
-  }, [products, search, categoryFilter, locationFilter]);
+  }, [products, search, categoryFilter]);
+
+  const visibleRows = filtered.slice(0, visibleCount);
 
   const availableCount = products.filter((p) => p.availability === 'available').length;
 
@@ -204,28 +265,23 @@ export default function FarmerProducts() {
             className="filter-input"
             placeholder="Search your products..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setVisibleCount(PAGE_SIZE);
+            }}
           />
 
           <select
             className="filter-select"
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={(e) => {
+              setCategoryFilter(e.target.value);
+              setVisibleCount(PAGE_SIZE);
+            }}
           >
             <option value="">Lahat ng category</option>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-
-          <select
-            className="filter-select"
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-          >
-            <option value="">Lahat ng lokasyon</option>
-            {LOCATIONS.map((l) => (
-              <option key={l} value={l}>{l}</option>
             ))}
           </select>
 
@@ -268,6 +324,59 @@ export default function FarmerProducts() {
 
             <form onSubmit={handleSave}>
               <div className="form-grid">
+                <div className="span-2" style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {form.image_path ? (
+                    <img
+                      src={form.image_path}
+                      alt="Preview ng produkto"
+                      style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 10 }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: 10,
+                        background: '#eef3ea',
+                        display: 'grid',
+                        placeItems: 'center',
+                        color: '#6b7a6b',
+                        fontSize: 13,
+                      }}
+                    >
+                      Walang larawan
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <label className="btn btn-ghost" style={{ cursor: processing ? 'wait' : 'pointer' }}>
+                      {processing
+                        ? 'Pinoproseso...'
+                        : form.image_path
+                          ? 'Palitan ang larawan'
+                          : 'Pumili ng larawan'}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleImageChange}
+                        disabled={processing}
+                        hidden
+                      />
+                    </label>
+
+                    {form.image_path && (
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        onClick={() => setForm({ ...form, image_path: '' })}
+                        disabled={processing}
+                      >
+                        Alisin
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 <input
                   name="product_name"
                   placeholder="Pangalan ng produkto *"
@@ -294,13 +403,12 @@ export default function FarmerProducts() {
                   required
                 />
 
-                <input
-                  name="unit"
-                  placeholder="Unit (kg, bundle, piraso) *"
-                  value={form.unit}
-                  onChange={handleChange}
-                  required
-                />
+                <select name="unit" value={form.unit} onChange={handleChange} required>
+                  <option value="" disabled>Pumili ng unit *</option>
+                  {withCurrent(UNITS, form.unit).map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
 
                 <input
                   name="quantity_available"
@@ -317,13 +425,6 @@ export default function FarmerProducts() {
                   <option value="unavailable">Unavailable</option>
                 </select>
 
-                <select name="location" value={form.location} onChange={handleChange} required>
-                  <option value="" disabled>Pumili ng lokasyon *</option>
-                  {withCurrent(LOCATIONS, form.location).map((l) => (
-                    <option key={l} value={l}>{l}</option>
-                  ))}
-                </select>
-
                 <textarea
                   name="description"
                   className="span-2"
@@ -337,7 +438,7 @@ export default function FarmerProducts() {
                 <button type="button" className="btn btn-ghost" onClick={closeForm}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={saving}>
+                <button type="submit" className="btn btn-primary" disabled={saving || processing}>
                   {saving ? 'Sinasave...' : 'I-save'}
                 </button>
               </div>
@@ -350,6 +451,7 @@ export default function FarmerProducts() {
         <table className="product-table">
           <thead>
             <tr>
+              <th>Image</th>
               <th>Product</th>
               <th>Price</th>
               <th>Quantity</th>
@@ -360,21 +462,32 @@ export default function FarmerProducts() {
           <tbody>
             {initialLoading && (
               <tr>
-                <td colSpan="5" className="empty-cell">Naglo-load...</td>
+                <td colSpan="6" className="empty-cell">Naglo-load...</td>
               </tr>
             )}
 
             {!initialLoading && filtered.length === 0 && (
               <tr>
-                <td colSpan="5" className="empty-cell">
+                <td colSpan="6" className="empty-cell">
                   Walang produktong tumugma. Pindutin ang + Add Product.
                 </td>
               </tr>
             )}
 
             {!initialLoading &&
-              filtered.map((p) => (
+              visibleRows.map((p) => (
                 <tr key={p.product_id}>
+                  <td>
+                    {p.image_path ? (
+                      <img
+                        src={p.image_path}
+                        alt={p.product_name}
+                        style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }}
+                      />
+                    ) : (
+                      '—'
+                    )}
+                  </td>
                   <td>{p.product_name}</td>
                   <td>₱{Number(p.price).toFixed(2)} / {p.unit}</td>
                   <td>{p.quantity_available} {p.unit}</td>
@@ -404,6 +517,42 @@ export default function FarmerProducts() {
           </tbody>
         </table>
       </div>
+
+      {!initialLoading && filtered.length > PAGE_SIZE && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 8,
+            padding: '16px 0',
+          }}
+        >
+          <span style={{ fontSize: 13, color: '#64748B' }}>
+            Showing {Math.min(visibleCount, filtered.length)} of {filtered.length} products
+          </span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {visibleCount < filtered.length && (
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+              >
+                See more
+              </button>
+            )}
+            {visibleCount > PAGE_SIZE && (
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setVisibleCount(PAGE_SIZE)}
+              >
+                See less
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </FarmerLayout>
   );
 }

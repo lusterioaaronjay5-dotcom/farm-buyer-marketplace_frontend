@@ -18,6 +18,10 @@ export function addToCart(product, quantity = 1) {
 
   if (existing) {
     existing.quantity += quantity;
+    // I-update ang larawan kung wala pa ito sa lumang cart item
+    if (!existing.image_path && product.image_path) {
+      existing.image_path = product.image_path;
+    }
   } else {
     items.push({
       product_id: product.product_id,
@@ -25,6 +29,7 @@ export function addToCart(product, quantity = 1) {
       price: Number(product.price),
       unit: product.unit,
       farmer_name: product.farmer_name,
+      image_path: product.image_path || '',
       quantity,
     });
   }

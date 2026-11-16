@@ -30,6 +30,9 @@ const ACTION_LABELS = {
   completed: 'Markahan na tapos',
 };
 
+// Mga pagpipilian ng oras ng biyahe, sa minuto
+const ETA_OPTIONS = [1, 2, 3, 5, 10];
+
 // Mga tab. Galing sa totoong status ng backend.
 const TABS = [
   { key: 'all', label: 'All', match: () => true },
@@ -93,6 +96,24 @@ function actionHint(order) {
   return '';
 }
 
+// Rating ng buyer para sa isang produkto
+function ItemReview({ review, orderStatus }) {
+  if (!review) {
+    if (orderStatus !== 'completed') return null;
+    return <p className="ro-muted" style={{ margin: '4px 0 0' }}>Wala pang rating.</p>;
+  }
+
+  return (
+    <div style={{ margin: '4px 0 0' }}>
+      <span style={{ color: '#d69e2e', letterSpacing: 2 }}>
+        {'★'.repeat(review.rating)}
+        {'☆'.repeat(5 - review.rating)}
+      </span>
+      {review.comment && <p className="ro-muted" style={{ margin: '2px 0 0' }}>{review.comment}</p>}
+    </div>
+  );
+}
+
 export default function ReceivedOrders() {
   const token = localStorage.getItem('token');
   const storedUser = getStoredUser();
@@ -105,6 +126,7 @@ export default function ReceivedOrders() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [etaMinutes, setEtaMinutes] = useState(2);
 
   const orders = data?.orders || [];
   const currentTab = TABS.find((t) => t.key === tab) || TABS[0];
@@ -147,11 +169,17 @@ export default function ReceivedOrders() {
     setError('');
     setMessage('');
 
+    const body = {
+      order_id: order.order_id,
+      status: order.next_status,
+    };
+    // Ang oras ng biyahe ay ipinapadala lang kapag "Ipadala na" sa delivery
+    if (order.next_status === 'out_for_delivery' && order.delivery_method !== 'pickup') {
+      body.eta_minutes = etaMinutes;
+    }
+
     try {
-      const res = await api.post('/farmer/orders/status', {
-        order_id: order.order_id,
-        status: order.next_status,
-      });
+      const res = await api.post('/farmer/orders/status', body);
       setMessage(res.data.message || 'Na-update ang status.');
       // Burahin ang lumang cache at kumuha ng bagong data
       invalidate('farmer:orders', 'farmer:dashboard');
@@ -164,8 +192,20 @@ export default function ReceivedOrders() {
   }
 
   const delivery = selected?.delivery || null;
+  const isPickup = selected?.delivery_method === 'pickup';
   const hasCoords =
-    delivery && delivery.latitude !== null && delivery.longitude !== null;
+    !isPickup && delivery && delivery.latitude !== null && delivery.longitude !== null;
+
+  // Sa pickup, "Handa na kunin" ang label imbes na "Nasa delivery" o "Ipadala na"
+  function stepLabel(step) {
+    if (isPickup && step === 'out_for_delivery') return 'Handa na kunin';
+    return STATUS_LABELS[step];
+  }
+
+  function actionLabel(status) {
+    if (isPickup && status === 'out_for_delivery') return 'Handa na kunin';
+    return ACTION_LABELS[status];
+  }
 
   return (
     <FarmerLayout>
@@ -253,7 +293,7 @@ export default function ReceivedOrders() {
                           return (
                             <div key={step} className={`ro-step${done ? ' done' : ''}`}>
                               <span className="ro-dot">{done ? '✓' : i + 1}</span>
-                              <span>{STATUS_LABELS[step]}</span>
+                              <span>{stepLabel(step)}</span>
                             </div>
                           );
                         })}
@@ -264,12 +304,15 @@ export default function ReceivedOrders() {
                   <div className="ro-block">
                     <h3>Mga Produkto Mo</h3>
                     {selected.items.map((item) => (
-                      <div className="ro-item-row" key={item.product_id}>
-                        <span>
-                          {item.product_name}{' '}
-                          <small>× {item.quantity} {item.unit}</small>
-                        </span>
-                        <span>{peso(item.line_total)}</span>
+                      <div key={item.product_id} style={{ marginBottom: 10 }}>
+                        <div className="ro-item-row">
+                          <span>
+                            {item.product_name}{' '}
+                            <small>× {item.quantity} {item.unit}</small>
+                          </span>
+                          <span>{peso(item.line_total)}</span>
+                        </div>
+                        <ItemReview review={item.review} orderStatus={selected.status} />
                       </div>
                     ))}
                     <div className="ro-total-row">
@@ -298,8 +341,11 @@ export default function ReceivedOrders() {
                     </div>
 
                     <div className="ro-block">
-                      <h3>Delivery Address</h3>
+                      <h3>{isPickup ? 'Pickup' : 'Delivery Address'}</h3>
                       <p>{delivery?.address || 'Walang address'}</p>
+                      <p className="ro-muted">
+                        Delivery fee ng buyer: {peso(selected.delivery_fee)}
+                      </p>
                     </div>
                   </div>
 
@@ -315,6 +361,7 @@ export default function ReceivedOrders() {
                           originLat: delivery.origin_latitude,
                           originLng: delivery.origin_longitude,
                           dispatchedAt: delivery.dispatched_at,
+                          etaSeconds: delivery.eta_seconds,
                         }}
                       />
                     </div>
@@ -322,14 +369,40 @@ export default function ReceivedOrders() {
 
                   <div className="ro-actions">
                     {selected.next_status ? (
-                      <button
-                        type="button"
-                        className="btn btn-primary ro-action"
-                        disabled={busy}
-                        onClick={() => advance(selected)}
-                      >
-                        {busy ? 'Sine-save...' : ACTION_LABELS[selected.next_status]}
-                      </button>
+                      <>
+                        {selected.next_status === 'out_for_delivery' && !isPickup && (
+                          <label
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              marginRight: 12,
+                              fontSize: 14,
+                            }}
+                          >
+                            <span>Oras ng biyahe</span>
+                            <select
+                              value={etaMinutes}
+                              onChange={(e) => setEtaMinutes(Number(e.target.value))}
+                              disabled={busy}
+                            >
+                              {ETA_OPTIONS.map((m) => (
+                                <option key={m} value={m}>
+                                  {m} minuto
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        )}
+                        <button
+                          type="button"
+                          className="btn btn-primary ro-action"
+                          disabled={busy}
+                          onClick={() => advance(selected)}
+                        >
+                          {busy ? 'Sine-save...' : actionLabel(selected.next_status)}
+                        </button>
+                      </>
                     ) : (
                       <span className="ro-muted">{actionHint(selected)}</span>
                     )}

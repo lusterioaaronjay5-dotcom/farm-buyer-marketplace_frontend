@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: '/marketplace', label: 'Marketplace', title: 'Marketplace' },
   { to: '/cart', label: 'My Cart', title: 'Shopping Cart' },
   { to: '/my-orders', label: 'My Orders', title: 'My Orders' },
+  { to: '/reports', label: 'Reports', title: 'Reports' },
   { to: '/buyer/messages', label: 'Messages', title: 'Messages', popup: true },
   { to: '/profile', label: 'My Profile', title: 'My Profile' },
 ];
@@ -51,13 +52,17 @@ export default function BuyerLayout({ children }) {
     navigate('/');
   }
 
+  const isLoggedIn = Boolean(token && user);
+
   return (
     <div className="buyer-shell">
       <aside className="buyer-sidebar">
-        <div className="buyer-logo">
-          <span className="buyer-logo-mark">FC</span>
-          <span>FarmConnect</span>
-        </div>
+        {isLoggedIn && (
+          <div className="buyer-account">
+            <span className="buyer-avatar">{getInitials(user.full_name)}</span>
+            <span className="buyer-account-name">{user.full_name || 'Buyer'}</span>
+          </div>
+        )}
 
         <nav className="buyer-nav">
           {NAV_ITEMS.map((item) =>
@@ -94,12 +99,7 @@ export default function BuyerLayout({ children }) {
         <header className="buyer-topbar">
           <h2 className="buyer-page-title">{current.title}</h2>
 
-          {token && user ? (
-            <div className="buyer-account">
-              <span className="buyer-avatar">{getInitials(user.full_name)}</span>
-              <span className="buyer-account-name">{user.full_name || 'Buyer'}</span>
-            </div>
-          ) : (
+          {!isLoggedIn && (
             <NavLink to="/login" className="buyer-login-link">
               Login
             </NavLink>

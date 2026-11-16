@@ -68,14 +68,19 @@
   box-shadow: 0 10px 30px rgba(37, 43, 37, 0.06);
 }
 
+/* Fixed na sukat ng picture. Naka-absolute ang image para hindi nito palakihin ang container. */
 .pd-media {
+  position: relative;
   min-height: 380px;
+  overflow: hidden;
   background: var(--pd-soft);
   display: grid;
   place-items: center;
 }
 
 .pd-media img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -359,14 +364,20 @@
   box-shadow: 0 14px 30px rgba(37, 43, 37, 0.1);
 }
 
+/* Fixed na sukat ng picture. Naka-absolute ang image para hindi nito palakihin ang card. */
 .pd-rel-img {
+  position: relative;
   height: 150px;
+  flex: 0 0 150px;
+  overflow: hidden;
   display: grid;
   place-items: center;
   background: var(--pd-soft);
 }
 
 .pd-rel-img img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
