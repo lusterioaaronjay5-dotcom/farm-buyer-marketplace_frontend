@@ -359,3 +359,15 @@ body:has(.login-page) .lp-logo-mark {
   background: #ffffff;
   color: #245c3a;
 }
+
+/* ===== Mobile: iwas sa header na nakapatong sa text ===== */
+@media (max-width: 860px) {
+  .login-page .lp-nav-inner {
+    justify-content: flex-end;
+    height: 64px;
+  }
+
+  .login-page .login-visual {
+    padding-top: 110px;
+  }
+}

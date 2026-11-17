@@ -206,7 +206,8 @@ export default function Login() {
           theme: 'outline',
           size: 'large',
           text: 'continue_with',
-          width: 360,
+          // Susunod sa lapad ng container, pero hindi lalampas sa 360px
+          width: Math.min(360, Math.max(200, googleBtnRef.current.offsetWidth)),
         });
       })
       .catch(() => {
