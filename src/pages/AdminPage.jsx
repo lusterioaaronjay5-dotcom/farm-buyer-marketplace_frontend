@@ -65,7 +65,9 @@ export default function AdminPage() {
 
   async function loadUsers() {
     const data = await adminRequest('/users');
-    setUsers(data.users || []);
+    // Pagkakasunod ayon sa ID, pinakamaliit sa taas
+    const list = [...(data.users || [])].sort((a, b) => Number(a.user_id) - Number(b.user_id));
+    setUsers(list);
   }
 
   async function loadProducts() {
