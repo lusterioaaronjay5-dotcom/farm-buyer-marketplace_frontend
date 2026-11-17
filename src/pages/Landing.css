@@ -920,3 +920,24 @@ body:has(.landing) .lp-nav {
     padding-top: 124px;
   }
 }
+
+/* ===== Mobile: ipakita ang nav links sa maliit na screen ===== */
+@media (max-width: 560px) {
+  .lp-nav-inner {
+    gap: 10px;
+  }
+
+  .lp-links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .lp-links a {
+    font-size: 0.8rem;
+  }
+
+  .lp-nav-actions .lp-btn-sm {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+}
