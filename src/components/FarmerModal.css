@@ -429,3 +429,32 @@
 .fm-preview-x:hover {
   background: rgba(255, 255, 255, 0.35);
 }
+
+/* Mobile: 2 card kada hilera, mas maliit ang larawan */
+@media (max-width: 560px) {
+  .fm-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .fm-prod-img {
+    height: 96px;
+  }
+
+  .fm-prod h4 {
+    font-size: 0.85rem;
+  }
+
+  .fm-prod-body {
+    padding: 8px 10px 4px;
+  }
+
+  .fm-prod-link {
+    margin: 6px 10px 10px;
+    font-size: 0.78rem;
+  }
+
+  .fm-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
