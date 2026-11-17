@@ -323,3 +323,75 @@
     transform: none;
   }
 }
+
+/* ===== Mobile: parehong structure, mas maliit na sukat ===== */
+@media (max-width: 640px) {
+  .mp-hero {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .mp-hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .mp-hero p {
+    font-size: 0.9rem;
+  }
+
+  .mp-search {
+    font-size: 0.9rem;
+    padding: 10px 14px;
+  }
+
+  .mp-filters {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mp-filters select {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+  }
+
+  .mp-filters .btn {
+    flex: 1 1 100%;
+  }
+
+  .mp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .mp-img {
+    height: 120px;
+  }
+
+  .mp-info {
+    padding: 10px;
+  }
+
+  .mp-info h3 {
+    font-size: 0.95rem;
+  }
+
+  .mp-price {
+    font-size: 1rem;
+  }
+
+  .mp-compare {
+    font-size: 0.78rem;
+  }
+
+  .mp-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .mp-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
