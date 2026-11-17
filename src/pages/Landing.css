@@ -935,6 +935,11 @@ body:has(.landing) .lp-nav {
     font-size: 0.8rem;
   }
 
+  .lp-signin {
+    font-size: 0.8rem;
+    margin-left: 6px;
+  }
+
   .lp-nav-actions .lp-btn-sm {
     padding: 8px 14px;
     font-size: 0.8rem;
