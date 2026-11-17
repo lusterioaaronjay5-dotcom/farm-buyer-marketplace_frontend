@@ -4,6 +4,9 @@ import AdminLayout from '../components/AdminLayout';
 
 const ROLES = ['buyer', 'farmer', 'admin'];
 
+// Parehong base URL ng api.js, para tumama sa backend sa Render at hindi sa Vercel
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 function authHeaders() {
   return {
     'Content-Type': 'application/json',
@@ -12,7 +15,7 @@ function authHeaders() {
 }
 
 async function adminRequest(path, options = {}) {
-  const res = await fetch(`/api/admin${path}`, { ...options, headers: authHeaders() });
+  const res = await fetch(`${API_BASE}/admin${path}`, { ...options, headers: authHeaders() });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.message || 'May error. Subukan ulit.');
   return data;
