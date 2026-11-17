@@ -363,3 +363,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Pinipigilan ang larawan na lumampas sa kahon ng produkto */
+.fm-prod-img {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+}
+
+.fm-prod-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
