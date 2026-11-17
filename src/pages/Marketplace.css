@@ -395,3 +395,8 @@
     text-align: center;
   }
 }
+
+/* Ayusin ang View Details button: kasama ang padding sa width para hindi lumampas sa card */
+.mp-btn {
+  box-sizing: border-box;
+}

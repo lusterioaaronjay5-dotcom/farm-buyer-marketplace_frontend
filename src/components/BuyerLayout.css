@@ -1,5 +1,4 @@
-﻿
-.buyer-shell {
+﻿.buyer-shell {
   --bd-forest: #245c3a;
   --bd-fresh: #76a94c;
   --bd-bg: #f5f7f2;
@@ -20,6 +19,7 @@
 .buyer-sidebar {
   position: sticky;
   top: 0;
+  z-index: 60;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -102,6 +102,11 @@
   background: #fdf3f3;
 }
 
+/* Backdrop: lalabas lang sa mobile kapag bukas ang menu */
+.buyer-backdrop {
+  display: none;
+}
+
 /* Main area */
 .buyer-main-wrap {
   display: flex;
@@ -121,6 +126,27 @@
   box-sizing: border-box;
   background: var(--bd-white);
   border-bottom: 1px solid var(--bd-line);
+}
+
+.buyer-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Hamburger: nakatago sa desktop */
+.buyer-menu-btn {
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 1px solid var(--bd-line);
+  border-radius: 10px;
+  background: var(--bd-white);
+  color: var(--bd-ink);
+  cursor: pointer;
 }
 
 .buyer-page-title {
@@ -166,40 +192,51 @@
   padding: 28px 32px 40px;
 }
 
-/* Mobile: sidebar nagiging top bar */
+/* Mobile: sidebar nagiging drawer, katulad ng sa farmer */
 @media (max-width: 800px) {
   .buyer-shell {
     grid-template-columns: 1fr;
   }
 
   .buyer-sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    border-right: none;
-    border-bottom: 1px solid var(--bd-line);
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    max-width: 85vw;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.12);
   }
 
-  .buyer-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+  .buyer-shell.nav-open .buyer-sidebar {
+    transform: none;
   }
 
-  .buyer-logout {
-    margin-top: 0;
-    margin-left: auto;
+  .buyer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(20, 30, 22, 0.35);
+  }
+
+  .buyer-menu-btn {
+    display: grid;
   }
 
   .buyer-topbar {
-    position: static;
-    padding: 14px 16px;
+    padding: 12px 16px;
   }
 
   .buyer-main {
     padding: 18px 16px 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buyer-sidebar {
+    transition: none;
   }
 }

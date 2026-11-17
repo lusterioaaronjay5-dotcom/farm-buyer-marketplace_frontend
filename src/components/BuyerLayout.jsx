@@ -15,6 +15,22 @@ const NAV_ITEMS = [
   { to: '/profile', label: 'My Profile', title: 'My Profile' },
 ];
 
+const MENU_ICON = (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+);
+
 function getStoredUser() {
   try {
     return JSON.parse(localStorage.getItem('user')) || null;
@@ -36,6 +52,7 @@ export default function BuyerLayout({ children }) {
   const location = useLocation();
   const token = localStorage.getItem('token');
   const user = getStoredUser();
+  const [navOpen, setNavOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const closeMessages = useCallback(() => setMessagesOpen(false), []);
   // Magre-refresh ang count kapag nagsara ang popup, para mawala ang badge kung nabasa na
@@ -49,13 +66,14 @@ export default function BuyerLayout({ children }) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     clearCache();
+    setNavOpen(false);
     navigate('/');
   }
 
   const isLoggedIn = Boolean(token && user);
 
   return (
-    <div className="buyer-shell">
+    <div className={`buyer-shell ${navOpen ? 'nav-open' : ''}`}>
       <aside className="buyer-sidebar">
         {isLoggedIn && (
           <div className="buyer-account">
@@ -72,6 +90,7 @@ export default function BuyerLayout({ children }) {
                 href="#messages"
                 onClick={(e) => {
                   e.preventDefault();
+                  setNavOpen(false);
                   setMessagesOpen(true);
                 }}
               >
@@ -81,7 +100,7 @@ export default function BuyerLayout({ children }) {
                 )}
               </a>
             ) : (
-              <NavLink key={item.to} to={item.to}>
+              <NavLink key={item.to} to={item.to} onClick={() => setNavOpen(false)}>
                 {item.label}
               </NavLink>
             )
@@ -95,9 +114,21 @@ export default function BuyerLayout({ children }) {
         )}
       </aside>
 
+      {navOpen && <div className="buyer-backdrop" onClick={() => setNavOpen(false)} />}
+
       <div className="buyer-main-wrap">
         <header className="buyer-topbar">
-          <h2 className="buyer-page-title">{current.title}</h2>
+          <div className="buyer-topbar-left">
+            <button
+              type="button"
+              className="buyer-menu-btn"
+              onClick={() => setNavOpen((v) => !v)}
+              aria-label="Buksan ang menu"
+            >
+              {MENU_ICON}
+            </button>
+            <h2 className="buyer-page-title">{current.title}</h2>
+          </div>
 
           {!isLoggedIn && (
             <NavLink to="/login" className="buyer-login-link">

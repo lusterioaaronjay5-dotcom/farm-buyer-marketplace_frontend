@@ -308,3 +308,8 @@
     text-align: left;
   }
 }
+
+/* Ayusin ang Manage Products button: kasama ang padding sa width para hindi lumampas sa banner */
+.fd-welcome .btn.btn-primary {
+  box-sizing: border-box;
+}
