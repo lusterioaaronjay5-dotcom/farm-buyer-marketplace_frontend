@@ -35,6 +35,8 @@ const STATUS_META = {
 
 const FALLBACK = { label: 'Pending', color: '#b7791f' };
 
+const EMPTY_FC = { type: 'FeatureCollection', features: [] };
+
 // Gumagawa ng popup gamit ang DOM para hindi tumakbo ang HTML ng address
 function buildPopup(label, meta) {
   const wrap = document.createElement('div');
@@ -65,36 +67,6 @@ function buildDirectionsUrl(lat, lng, originAddress) {
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
-// Iguhit ang ruta sa mapa. Kung hindi pa handa ang style, hihintayin muna.
-function drawRouteLine(map, coords) {
-  const data = {
-    type: 'Feature',
-    geometry: { type: 'LineString', coordinates: coords },
-  };
-
-  const apply = () => {
-    const existing = map.getSource('route');
-    if (existing) {
-      existing.setData(data);
-      return;
-    }
-    map.addSource('route', { type: 'geojson', data });
-    map.addLayer({
-      id: 'route-line',
-      type: 'line',
-      source: 'route',
-      paint: {
-        'line-color': '#6b46c1',
-        'line-width': 4,
-        'line-opacity': 0.8,
-      },
-    });
-  };
-
-  if (map.isStyleLoaded()) apply();
-  else map.once('load', apply);
-}
-
 export default function DeliveryMap({ lat, lng, label, status, originAddress, route }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
@@ -103,6 +75,7 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
   const riderRef = useRef(null);
   const [roadCoords, setRoadCoords] = useState(null);
   const [arrived, setArrived] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
   const meta = STATUS_META[status] || FALLBACK;
 
   // Datos ng ruta ng rider. Galing sa database, kaya Number() muna.
@@ -129,6 +102,24 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     mapRef.current = map;
 
+    // Kapag handa na ang mapa, gagawin ang route layer dito
+    map.on('load', () => {
+      if (!map.getSource('route')) {
+        map.addSource('route', { type: 'geojson', data: EMPTY_FC });
+        map.addLayer({
+          id: 'route-line',
+          type: 'line',
+          source: 'route',
+          paint: {
+            'line-color': '#6b46c1',
+            'line-width': 5,
+            'line-opacity': 0.9,
+          },
+        });
+      }
+      setMapReady(true);
+    });
+
     const pin = document.createElement('div');
     pin.style.width = '22px';
     pin.style.height = '22px';
@@ -154,6 +145,7 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
       popupRef.current = null;
       riderRef.current = null;
       mapRef.current = null;
+      setMapReady(false);
       map.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -189,17 +181,29 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
     };
   }, [hasRoute, originLat, originLng, lat, lng]);
 
-  // Iguhit ang linya ng ruta. Kung walang road route, tuwid na linya ang gagamitin.
+  // I-update ang linya ng ruta kapag handa na ang mapa at ang ruta
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !hasRoute) return;
+    if (!map || !mapReady) return;
+
+    const source = map.getSource('route');
+    if (!source) return;
+
+    if (!hasRoute) {
+      source.setData(EMPTY_FC);
+      return;
+    }
 
     const coords = roadCoords || [
       [originLng, originLat],
       [lng, lat],
     ];
-    drawRouteLine(map, coords);
-  }, [hasRoute, roadCoords, originLat, originLng, lat, lng]);
+    source.setData({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: coords },
+    });
+  }, [mapReady, hasRoute, roadCoords, originLat, originLng, lat, lng]);
 
   // Gumagalaw na rider sa mapa habang out for delivery
   useEffect(() => {
