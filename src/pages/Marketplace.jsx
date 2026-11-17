@@ -67,6 +67,7 @@ export default function Marketplace() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const loc = location.trim().toLowerCase();
     return products.filter((p) => {
       const matchSearch =
         !q ||
@@ -74,7 +75,8 @@ export default function Marketplace() {
           (v || '').toLowerCase().includes(q)
         );
       const matchCategory = !category || p.category === category;
-      const matchLocation = !location || p.location === location;
+      // Naglalaman ang location ng produkto ng probinsya, halimbawa "Socorro, Oriental Mindoro"
+      const matchLocation = !loc || (p.location || '').toLowerCase().includes(loc);
       return matchSearch && matchCategory && matchLocation;
     });
   }, [products, search, category, location]);
