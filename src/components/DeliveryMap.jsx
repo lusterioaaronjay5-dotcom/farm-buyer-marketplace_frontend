@@ -65,7 +65,7 @@ function buildDirectionsUrl(lat, lng, originAddress) {
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
-// Iguhit ang ruta sa kalsada sa mapa. Kung hindi pa handa ang style, hihintayin muna.
+// Iguhit ang ruta sa mapa. Kung hindi pa handa ang style, hihintayin muna.
 function drawRouteLine(map, coords) {
   const data = {
     type: 'Feature',
@@ -189,12 +189,17 @@ export default function DeliveryMap({ lat, lng, label, status, originAddress, ro
     };
   }, [hasRoute, originLat, originLng, lat, lng]);
 
-  // Iguhit ang linya ng ruta kapag handa na ang mapa at ang ruta
+  // Iguhit ang linya ng ruta. Kung walang road route, tuwid na linya ang gagamitin.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !roadCoords) return;
-    drawRouteLine(map, roadCoords);
-  }, [roadCoords, lat, lng]);
+    if (!map || !hasRoute) return;
+
+    const coords = roadCoords || [
+      [originLng, originLat],
+      [lng, lat],
+    ];
+    drawRouteLine(map, coords);
+  }, [hasRoute, roadCoords, originLat, originLng, lat, lng]);
 
   // Gumagalaw na rider sa mapa habang out for delivery
   useEffect(() => {
