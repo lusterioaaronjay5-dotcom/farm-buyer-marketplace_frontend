@@ -71,7 +71,7 @@ export default function Marketplace() {
     return products.filter((p) => {
       const matchSearch =
         !q ||
-        [p.product_name, p.farmer_name, p.category].some((v) =>
+        [p.product_name, p.farmer_name, p.category, p.location].some((v) =>
           (v || '').toLowerCase().includes(q)
         );
       const matchCategory = !category || p.category === category;
@@ -97,7 +97,7 @@ export default function Marketplace() {
 
         <input
           className="mp-search"
-          placeholder="Search produkto, farmer, o category..."
+          placeholder="Search produkto, farmer, lugar, o category..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
