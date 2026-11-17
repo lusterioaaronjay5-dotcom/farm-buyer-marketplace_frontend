@@ -378,3 +378,54 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Pindutin ang larawan para lumaki */
+.fm-prod-img {
+  width: 100%;
+  padding: 0;
+  border: none;
+  cursor: zoom-in;
+  font: inherit;
+}
+
+/* Malaking larawan sa ibabaw ng modal */
+.fm-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.8);
+  cursor: zoom-out;
+  animation: fm-fade 0.2s ease both;
+}
+
+.fm-preview img {
+  max-width: min(640px, 100%);
+  max-height: 85vh;
+  border-radius: 18px;
+  object-fit: contain;
+  background: #ffffff;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.fm-preview-x {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.fm-preview-x:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
